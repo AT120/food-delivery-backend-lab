@@ -14,7 +14,7 @@ public class RestaurantController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Collection<Restaurant>>> GetRestaurants(int page, int nameQuery)
+    public async Task<ActionResult<ICollection<Restaurant>>> GetRestaurants(int page, int nameQuery)
     {
         return Problem("This method has not been yet implemented", statusCode: 501); 
         // Пустой список или 404, 204?
@@ -26,28 +26,8 @@ public class RestaurantController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Collection<Menu>>> GetMenus(Guid restaurantId)
+    public async Task<ActionResult<ICollection<Menu>>> GetMenus(Guid restaurantId)
     {
         return Problem("This method has not been yet implemented", statusCode: 501); 
     }
-
-    [HttpGet("{restaurantId}/dishes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Collection<Dish>>> GetDishes(
-        Guid restaurantId,
-        uint page,
-        bool vegetarianOnly,
-        [FromQuery] Collection<Guid> menus,
-        SortingTypes sorting)
-    {
-        return Problem("This method has not been yet implemented", statusCode: 501); 
-    }
-
-
-    
-
-
-
 }
