@@ -1,4 +1,4 @@
-namespace Backend.Models;
+namespace BackendApi.Models;
 
 public class Menu
 {

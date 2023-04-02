@@ -1,5 +1,5 @@
 using System.Xml;
-namespace Backend.Models;
+namespace BackendApi.Models;
 
 public enum DishCategory
 {

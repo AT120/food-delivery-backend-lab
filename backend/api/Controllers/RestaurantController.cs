@@ -1,17 +1,14 @@
-using System.Collections.ObjectModel;
-using System.ComponentModel.Design;
-using Backend.Models;
+using BackendApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace Backend.Controllers;
+namespace BackendApi.Controllers;
 
 [ApiController]
 [Route("/api/restaurants")]
 public class RestaurantController : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ICollection<Restaurant>>> GetRestaurants(int page, int nameQuery)
@@ -25,7 +22,6 @@ public class RestaurantController : ControllerBase
     [HttpGet("{restaurantId}/menus")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ICollection<Menu>>> GetMenus(Guid restaurantId)
     {
         return Problem("This method has not been yet implemented", statusCode: 501); 
