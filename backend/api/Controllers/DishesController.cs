@@ -19,7 +19,7 @@ public class DishesController : ControllerBase
         bool? vegetarianOnly,
         [FromQuery] ICollection<int>? menus,
         [FromQuery] ICollection<DishCategory>? categories,
-        SortingTypes? sorting)
+        SortingTypes? sorting) //TODO: переделать по rest
     {
         return Problem("This method has not been yet implemented", statusCode: 501); 
     } 

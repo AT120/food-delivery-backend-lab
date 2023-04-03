@@ -1,4 +1,4 @@
-namespace BackendApi.Models;
+namespace BackendCommon.Enums;
 
 public enum OrderStatus
 {
@@ -12,4 +12,4 @@ public enum OrderStatus
 
     Completed = Delivered + Canceled,
     
-} //TODO: extension?
+}

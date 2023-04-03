@@ -1,4 +1,4 @@
-namespace BackendApi.Models;
+namespace BackendCommon.Enums;
 
 public enum DishCategory
 {

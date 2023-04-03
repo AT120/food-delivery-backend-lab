@@ -25,7 +25,7 @@ public class OrdersController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<OrderId>> CreateOrder()
     {
@@ -34,7 +34,7 @@ public class OrdersController : ControllerBase
 
     [HttpPost("{orderId}/repeat")]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status200OK)] //TODO: остутствующие блюда
+    [ProducesResponseType(StatusCodes.Status201Created)] //TODO: остутствующие блюда
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> RepeatOrder(int orderId)
@@ -47,6 +47,7 @@ public class OrdersController : ControllerBase
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)] //TODO: 409 instead?
+    //TODO: че возвращать если заказ уже на кухне?
     public async Task<ActionResult> CancelOrder(int orderId)
     {
         return Problem("This method has not been yet implemented", statusCode: 501); 
