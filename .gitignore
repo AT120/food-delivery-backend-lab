@@ -40,3 +40,4 @@ msbuild.wrn
 *.leu
 
 diag*
+*.sh
