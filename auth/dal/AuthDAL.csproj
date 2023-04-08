@@ -19,4 +19,9 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\common\AuthCommon.csproj" />
+    <ProjectReference Include="..\..\common\ProjCommon.csproj" />
+  </ItemGroup>
+
 </Project>

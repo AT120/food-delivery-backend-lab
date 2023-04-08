@@ -1,5 +1,7 @@
-using AuthApi.Models;
+using AuthCommon.DTO;
+using AuthCommon.Interfaces;
 using AuthDAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,24 +13,25 @@ namespace AuthApi.Controllers;
 public class AuthController : ControllerBase
 {
 
-    private readonly UserManager<User> _userManager;
+    private readonly IAuthService _authService;
 
-    public AuthController(UserManager<User> um)
+    public AuthController(IAuthService auth)
     {
-        _userManager = um;
+        _authService = auth;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterCreds creds)
     {
-        var user = new User {
-            Email = creds.Email,
-            FullName = creds.Name,
-            PhoneNumber = creds.PhoneNumber
-        };
-
-        _userManager.CreateAsync()
-        
+        try
+        {
+            await _authService.Register(creds);
+            return Problem("sehes", statusCode: 200);
+        }
+        catch
+        {
+            return Problem("sehes", statusCode: 500);
+        }
     }
 
     [HttpPost("login")]

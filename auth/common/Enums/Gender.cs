@@ -1,4 +1,4 @@
-namespace AuthDAL.Models;
+namespace AuthCommon.Enums;
 
 public enum Gender
 {

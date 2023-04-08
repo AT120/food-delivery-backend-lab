@@ -15,9 +15,9 @@ public class AuthDBContext : IdentityDbContext<User, Role, Guid>
     public AuthDBContext(DbContextOptions<AuthDBContext> options) : base(options) { }
 
 
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        //TODO: не сломает ли это identity? может нужно base.onModelCreating()?
         base.OnModelCreating(builder);
 
         builder.Entity<Cook>()
@@ -43,6 +43,5 @@ public class AuthDBContext : IdentityDbContext<User, Role, Guid>
             .WithOne()
             .HasForeignKey<Manager>(c => c.Id)
             .IsRequired();
-        
     }
 }

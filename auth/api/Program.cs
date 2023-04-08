@@ -1,3 +1,5 @@
+using AuthBL.Services;
+using AuthCommon.Interfaces;
 using AuthDAL;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +11,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.AddAuth();
+builder.AddIdentityStorage();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 var app = builder.Build();
@@ -19,9 +22,10 @@ if (app.Environment.IsDevelopment())
 {    
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.MigrateAuthDBWhenNecessary();
 }
 
-app.MigrateAuthDBWhenNecessary();
+await app.UpdateRolesAndClaims();
 
 app.UseHttpsRedirection();
 
