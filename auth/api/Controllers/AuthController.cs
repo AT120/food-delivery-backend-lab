@@ -1,9 +1,7 @@
 using AuthCommon.DTO;
 using AuthCommon.Interfaces;
-using AuthDAL.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ProjCommon.Exceptions;
 
 namespace AuthApi.Controllers;
 
@@ -21,24 +19,39 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterCreds creds)
+    public async Task<ActionResult<TokenPair>> Register(RegisterCreds creds)
     {
         try
         {
-            await _authService.Register(creds);
-            return Problem("sehes", statusCode: 200);
+            return await _authService.Register(creds);    
+        }
+        catch (BackendException be)
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode ?? 500);
         }
         catch
         {
-            return Problem("sehes", statusCode: 500);
+            return Problem("eprst", statusCode: 500);
         }
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login() 
+    public async Task<ActionResult<TokenPair>> Login(LoginCreds creds) 
     {
-        return Problem("This method has not been yet implemented", statusCode: 501); 
+        try
+        {
+            return await _authService.Login(creds);    
+        }
+        catch (BackendException be)
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode ?? 500);
+        }
+        catch
+        {
+            return Problem("eprst", statusCode: 500);
+        }
     }
+
 
     [HttpPost("logout")]
     public async Task<IActionResult> Logout() 

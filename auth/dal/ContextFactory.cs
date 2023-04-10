@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore.Design;
 using AuthDAL;
-using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 
 class AuthDBContextFactory : IDesignTimeDbContextFactory<AuthDBContext>

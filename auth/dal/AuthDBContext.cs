@@ -11,6 +11,7 @@ public class AuthDBContext : IdentityDbContext<User, Role, Guid>
     public DbSet<Courier> Couriers { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Manager> Managers { get; set; }
+    public DbSet<IssuedToken> Tokens { get; set; }
 
     public AuthDBContext(DbContextOptions<AuthDBContext> options) : base(options) { }
 
@@ -43,5 +44,7 @@ public class AuthDBContext : IdentityDbContext<User, Role, Guid>
             .WithOne()
             .HasForeignKey<Manager>(c => c.Id)
             .IsRequired();
+
+        builder.Entity<IssuedToken>().Property(x => x.Id).UseIdentityColumn();
     }
 }

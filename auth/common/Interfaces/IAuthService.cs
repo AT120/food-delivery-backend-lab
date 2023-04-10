@@ -4,5 +4,7 @@ namespace AuthCommon.Interfaces;
 
 public interface IAuthService
 {
-    Task Register(RegisterCreds creds);
+    Task<TokenPair> Register(RegisterCreds creds);
+    Task<TokenPair> Login(LoginCreds creds);
+    
 }
