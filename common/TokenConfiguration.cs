@@ -51,12 +51,11 @@ public static class TokenConfiguration
     }
 
 
-    public static void AddJwtAuthentication(this IServiceCollection services, JwtBearerOptions? options = null)
+    public static void AddJwtAuthentication(this IServiceCollection services, JwtBearerEvents? events = null)
     {
         if (Issuer is null)
             throw new InvalidOperationException("Token configuration is empty. You have to call ConfigureToken first.");
 
-        options ??= new JwtBearerOptions();
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(opts =>
@@ -71,6 +70,9 @@ public static class TokenConfiguration
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = Key
                 };
+
+                if (events is not null)
+                    opts.Events = events;
             });
     }
 }

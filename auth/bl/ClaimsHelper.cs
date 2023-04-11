@@ -8,7 +8,7 @@ public static class ClaimsHelper
     private readonly static Dictionary<string, Func<string, object>> _converters = new()
     {
         {ClaimType.Address, x => x},
-        {ClaimType.Id, x => Guid.Parse(x)},
+        {ClaimType.UserId, x => Guid.Parse(x)},
         {ClaimType.Role, x => x},
         {ClaimType.TokenId, x => int.Parse(x)},
         {ClaimType.TokenType, x => Enum.Parse<TokenType>(x)}

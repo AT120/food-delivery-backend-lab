@@ -1,7 +1,8 @@
 using AuthCommon.DTO;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using AuthCommon.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProjCommon.Exceptions;
 
 namespace AuthApi.Controllers;
 
@@ -10,11 +11,24 @@ namespace AuthApi.Controllers;
 public class ProfileController : ControllerBase
 {
 
+    private readonly IProfileService _profileService;
+    public ProfileController(IProfileService ps)
+    {
+        _profileService = ps;
+    }
+
     [Authorize()]
     [HttpGet]
     public async Task<ActionResult<UserProfile>> GetUserProfile()
     {
-        return Problem("This method has not been yet implemented", statusCode: 501); 
+        try
+        {
+            return await _profileService.GetUserProfile(User); 
+        }
+        catch (BackendException be)
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode);
+        }
     }
 
 

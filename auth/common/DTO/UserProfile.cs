@@ -10,6 +10,6 @@ public class UserProfile
     public string? PhoneNumber { get; set; }
     public Gender Gender { get; set; }
     public DateTime? BirthDate { get; set; }
-    public ICollection<RoleType> Roles { get; set; }
+    public ICollection<string> Roles { get; set; }
     public string? Address { get; set; }
 }

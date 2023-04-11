@@ -65,7 +65,7 @@ public class AuthController : ControllerBase
         {
             if (AllUserTokens)
                 await _authService.Logout(
-                    ClaimsHelper.GetValue<Guid>(ClaimType.Id, User)
+                    ClaimsHelper.GetValue<Guid>(ClaimType.UserId, User)
                 );
             else
                 await _authService.Logout(
@@ -78,4 +78,18 @@ public class AuthController : ControllerBase
             return Problem("Provided token is malformed.", statusCode: 400);
         }
     }
+
+    [HttpPost("refresh")]
+    [Authorize(Policies.RefreshOnly)]
+    public async Task<ActionResult<TokenPair>> Refresh()
+    {
+        try
+        {
+            return await _authService.Refresh(User);
+        }
+        catch (BackendException be)
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode);
+        }
+    } 
 }

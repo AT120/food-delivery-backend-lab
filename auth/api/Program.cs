@@ -1,9 +1,12 @@
 using AuthApi;
+using AuthBL;
 using AuthBL.Services;
 using AuthCommon.Interfaces;
 using AuthDAL;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using ProjCommon;
+using ProjCommon.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +18,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.ConfigureToken();
 
-builder.Services.AddJwtAuthentication();
+builder.Services.AddJwtAuthentication(
+    new JwtBearerEvents 
+    {
+        OnTokenValidated = AuthenticationChecker.RefreshChecker,
+    }
+);
+
 builder.AddIdentityStorage();
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -25,6 +34,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 5;
 
     options.User.RequireUniqueEmail = true;
+    options.ClaimsIdentity.UserIdClaimType = ClaimType.UserId;
 });
 
 builder.Services.AddAuthorization(options =>
@@ -35,6 +45,7 @@ builder.Services.AddAuthorization(options =>
  
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 
 

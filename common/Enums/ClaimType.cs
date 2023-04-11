@@ -8,7 +8,7 @@ public static class ClaimType
     public static readonly string TokenId = "tokenId";
     public static readonly string Role = "role";
     public static readonly string Address = "address";
-    public static readonly string Id = "id";
+    public static readonly string UserId = "id";
 
     // CanOrder,
     // CanCancelOrder,

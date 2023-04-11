@@ -71,7 +71,7 @@ public class AuthService : IAuthService
         {
             claims.Add(ClaimsHelper.CreateClaim(ClaimType.Role, role));
         }
-        claims.Add(ClaimsHelper.CreateClaim(ClaimType.Id, user.Id));
+        claims.Add(ClaimsHelper.CreateClaim(ClaimType.UserId, user.Id));
 
         return claims;
     } 
@@ -102,7 +102,7 @@ public class AuthService : IAuthService
 
         var claims = new List<Claim>
         {
-            ClaimsHelper.CreateClaim(ClaimType.Id, user.Id),
+            ClaimsHelper.CreateClaim(ClaimType.UserId, user.Id),
             ClaimsHelper.CreateClaim(ClaimType.TokenType, TokenType.Refresh),
             ClaimsHelper.CreateClaim(ClaimType.TokenId, tokenId)
         };
@@ -182,5 +182,12 @@ public class AuthService : IAuthService
         await _dbcontext.Tokens
             .Where(t => t.Id == tokenId)
             .ExecuteDeleteAsync();
+    }
+
+    public async Task<TokenPair> Refresh(ClaimsPrincipal userPrincipal)
+    {
+        User user = await _userManager.GetUserAsync(userPrincipal)
+            ?? throw new BackendException(404, "Requested user does not exist.");
+        return await GenerateTokenPair(user);
     }
 }
