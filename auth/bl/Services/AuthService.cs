@@ -6,6 +6,8 @@ using AuthCommon.Interfaces;
 using AuthDAL;
 using AuthDAL.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing.Constraints;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjCommon;
 using ProjCommon.Enums;
@@ -61,7 +63,7 @@ public class AuthService : IAuthService
     }
 
 
-    private async Task<IList<Claim>> GetUserClaims(User user)
+    private async Task<IList<Claim>> GetUserClaims(User user) 
     {
         var claims = await _userManager.GetClaimsAsync(user);
         var roles = await _userManager.GetRolesAsync(user);
@@ -75,20 +77,41 @@ public class AuthService : IAuthService
     } 
 
 
-    private async Task<string> GenerateToken(User user, TokenType type)
+    private async Task<string> GenerateAccessToken(User user)
     {
 
         var claims = await GetUserClaims(user);
-        claims.Add(ClaimsHelper.CreateClaim(ClaimType.TokenType, type));
-        int lifetime = (type == TokenType.Refresh)
-             ? TokenConfiguration.RefreshTokenLifetime
-             : TokenConfiguration.AccessTokenLifetime;
+        claims.Add(ClaimsHelper.CreateClaim(ClaimType.TokenType, TokenType.Access));
+
         var now = DateTime.UtcNow;
         var token = new JwtSecurityToken(
             issuer: TokenConfiguration.Issuer,
-            // issuer: "Rayman",
             notBefore: now,
-            expires: now.AddMinutes(lifetime),
+            expires: now.AddSeconds(TokenConfiguration.AccessTokenLifetime),
+            claims: claims,
+            signingCredentials: new SigningCredentials(
+                TokenConfiguration.Key,
+                SecurityAlgorithms.HmacSha256
+            )
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+    private static string GenerateRefreshToken(User user, int tokenId)
+    {
+
+        var claims = new List<Claim>
+        {
+            ClaimsHelper.CreateClaim(ClaimType.Id, user.Id),
+            ClaimsHelper.CreateClaim(ClaimType.TokenType, TokenType.Refresh),
+            ClaimsHelper.CreateClaim(ClaimType.TokenId, tokenId)
+        };
+
+        var now = DateTime.UtcNow;
+        var token = new JwtSecurityToken(
+            issuer: TokenConfiguration.Issuer,
+            notBefore: now,
+            expires: now.AddSeconds(TokenConfiguration.RefreshTokenLifetime),
             claims: claims,
             signingCredentials: new SigningCredentials(
                 TokenConfiguration.Key,
@@ -99,19 +122,23 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-
     private async Task<TokenPair> GenerateTokenPair(User user)
     {
-        var tokens = new TokenPair
+        var tokenDB = new IssuedToken 
         {
-            RefreshToken = await GenerateToken(user, TokenType.Refresh),
-            AccessToken = await GenerateToken(user, TokenType.Access)
+            UserId = user.Id,
+            ValidUntil = DateTime.UtcNow.AddSeconds(TokenConfiguration.RefreshTokenLifetime)
         };
 
-        // _dbcontext.IssuedTokens.Add(
-        //     new IssuedTokenDbModel { RefreshTokenId = parentRefreshTokenId }
-        // );
-        // _dbcontext.SaveChanges();
+        await _dbcontext.Tokens.AddAsync(tokenDB);
+        await _dbcontext.SaveChangesAsync();
+
+
+        var tokens = new TokenPair
+        {
+            RefreshToken = GenerateRefreshToken(user, tokenDB.Id),
+            AccessToken = await GenerateAccessToken(user)
+        };
 
         return tokens;
     }
@@ -141,6 +168,19 @@ public class AuthService : IAuthService
             throw new BackendException(401, "Login or password is incorrect.");
 
         return await GenerateTokenPair(user);
+    }
 
+    public async Task Logout(Guid userId)
+    {
+        await _dbcontext.Tokens
+            .Where(t => t.UserId == userId)
+            .ExecuteDeleteAsync();
+    }
+
+    public async Task Logout(int tokenId)
+    {
+        await _dbcontext.Tokens
+            .Where(t => t.Id == tokenId)
+            .ExecuteDeleteAsync();
     }
 }

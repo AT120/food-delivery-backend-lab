@@ -46,5 +46,10 @@ public class AuthDBContext : IdentityDbContext<User, Role, Guid>
             .IsRequired();
 
         builder.Entity<IssuedToken>().Property(x => x.Id).UseIdentityColumn();
+        builder.Entity<User>()
+            .HasMany<IssuedToken>()
+            .WithOne()
+            .HasForeignKey(u => u.UserId)
+            .IsRequired();
     }
 }

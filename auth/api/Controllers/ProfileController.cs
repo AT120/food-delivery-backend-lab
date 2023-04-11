@@ -10,7 +10,7 @@ namespace AuthApi.Controllers;
 public class ProfileController : ControllerBase
 {
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize()]
     [HttpGet]
     public async Task<ActionResult<UserProfile>> GetUserProfile()
     {

@@ -58,15 +58,7 @@ public static class TokenConfiguration
 
         options ??= new JwtBearerOptions();
         services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme
-                // options => {
-                // options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                // options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                // options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                // options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
-                // options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-            // }
-            )
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(opts =>
             {
                 // opts = options;
@@ -78,15 +70,6 @@ public static class TokenConfiguration
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = Key
-                };
-                opts.Events = new JwtBearerEvents
-                {      
-                    OnMessageReceived = test             
-                    // OnAuthenticationFailed = async ctx => 
-                    //  {
-                    //      var putBreakpointHere = true;
-                    //      var exceptionMessage = ctx.Exception;
-                    //  },
                 };
             });
     }

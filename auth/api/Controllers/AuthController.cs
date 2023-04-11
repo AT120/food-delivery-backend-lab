@@ -1,6 +1,10 @@
+using AuthBL;
 using AuthCommon.DTO;
 using AuthCommon.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProjCommon;
+using ProjCommon.Enums;
 using ProjCommon.Exceptions;
 
 namespace AuthApi.Controllers;
@@ -23,7 +27,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            return await _authService.Register(creds);    
+            return await _authService.Register(creds);
         }
         catch (BackendException be)
         {
@@ -36,11 +40,11 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<TokenPair>> Login(LoginCreds creds) 
+    public async Task<ActionResult<TokenPair>> Login(LoginCreds creds)
     {
         try
         {
-            return await _authService.Login(creds);    
+            return await _authService.Login(creds);
         }
         catch (BackendException be)
         {
@@ -54,8 +58,24 @@ public class AuthController : ControllerBase
 
 
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout() 
+    [Authorize(Policies.RefreshOnly)]
+    public async Task<ActionResult> Logout(bool AllUserTokens)
     {
-        return Problem("This method has not been yet implemented", statusCode: 501); 
+        try
+        {
+            if (AllUserTokens)
+                await _authService.Logout(
+                    ClaimsHelper.GetValue<Guid>(ClaimType.Id, User)
+                );
+            else
+                await _authService.Logout(
+                    ClaimsHelper.GetValue<int>(ClaimType.TokenId, User)
+                );
+            return NoContent();
+        }
+        catch
+        {
+            return Problem("Provided token is malformed.", statusCode: 400);
+        }
     }
 }
