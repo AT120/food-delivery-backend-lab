@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace BackendApi.Models;
+namespace BackendCommon.DTO;
 
 public enum OrderFilterStatus
 {

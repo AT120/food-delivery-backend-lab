@@ -17,7 +17,7 @@ public class ProfileController : ControllerBase
         _profileService = ps;
     }
 
-    [Authorize()]
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<UserProfile>> GetUserProfile()
     {
@@ -31,9 +31,9 @@ public class ProfileController : ControllerBase
         }
     }
 
-
+    [Authorize]
     [HttpPut]
-    public async Task<ActionResult> UpdateUserProfile()
+    public async Task<ActionResult> UpdateUserProfile(UserProfileEdit profile)
     {
         return Problem("This method has not been yet implemented", statusCode: 501); 
     }

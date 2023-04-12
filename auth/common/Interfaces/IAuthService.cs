@@ -10,4 +10,5 @@ public interface IAuthService
     Task Logout(Guid userId);
     Task Logout(int tokenId);
     Task<TokenPair> Refresh(ClaimsPrincipal userPrincipal);
+    Task ChangePassword(PasswordPair passwords, ClaimsPrincipal userPrincipal);
 }

@@ -1,45 +1,22 @@
-using System.Runtime.InteropServices;
-using System.Security.Claims;
 using AuthDAL.Models;
+using BackendDAL;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ProjCommon;
-using ProjCommon.Enums;
 
 namespace AuthDAL;
 public static class AuthConfigurator
 {
     public static void AddIdentityStorage(this WebApplicationBuilder builder)
     {
-        builder.Services.AddDbContext<AuthDBContext>(options =>
-        {
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-        });
-
+        builder.AddDB<AuthDBContext>();
         builder.Services.AddIdentityCore<User>()
             .AddRoles<Role>()
             .AddRoleManager<RoleManager<Role>>()
-            .AddEntityFrameworkStores<AuthDBContext>();
-            
+            .AddEntityFrameworkStores<AuthDBContext>();     
     }
-
-    public static void MigrateAuthDBWhenNecessary(this WebApplication app)
-    {
-        using (var scope = app.Services.CreateScope())
-        {
-            var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-            if (bool.TryParse(config["RuntimeMigrations"], out bool migrate) && migrate)
-            {
-                var dbcontext = scope.ServiceProvider.GetRequiredService<AuthDBContext>();
-                dbcontext.Database.Migrate();
-            }
-        }
-    }
-
     // public async static Task UpdateRolesAndClaims(this WebApplication app)
     // {
     //     using (var scope = app.Services.CreateScope())

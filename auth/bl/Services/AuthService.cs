@@ -1,12 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using AuthCommon.DTO;
 using AuthCommon.Interfaces;
 using AuthDAL;
 using AuthDAL.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjCommon;
@@ -29,37 +27,6 @@ public class AuthService : IAuthService
         _userManager = um;
         _dbcontext = dbc;
         _roleManager = rm;
-    }
-
-
-    private async Task CreateCustomer(User user, string address)
-    {
-        var res = await _userManager.AddClaimAsync(
-            user,
-            ClaimsHelper.CreateClaim(ClaimType.Address, address)
-        );
-        if (!res.Succeeded)
-            throw new BackendException(
-                500,
-                "An error occured while creating the user",
-                $"Failed to create claim {res.Errors}"
-            );
-        res = await _userManager.AddToRoleAsync(user, Enum.GetName(RoleType.Customer));
-        if (!res.Succeeded)
-            throw new BackendException(
-                500,
-                "An error occured while creating the user",
-                $"Failed to add user to role {res.Errors}"
-            );
-
-        await _dbcontext.Customers.AddAsync(new Customer
-        {
-            Address = address,
-            BaseUser = user,
-            Id = user.Id
-        });
-
-        await _dbcontext.SaveChangesAsync();
     }
 
 
@@ -151,7 +118,9 @@ public class AuthService : IAuthService
         if (!res.Succeeded)
             throw new BackendException(400, res.Errors.First().Description);
         if (creds.Address is not null)
-            await CreateCustomer(user, creds.Address);
+        {
+            // await CreateCustomer(user, creds.Address);
+        }
 
         return await GenerateTokenPair(user);
 
@@ -189,5 +158,21 @@ public class AuthService : IAuthService
         User user = await _userManager.GetUserAsync(userPrincipal)
             ?? throw new BackendException(404, "Requested user does not exist.");
         return await GenerateTokenPair(user);
+    }
+
+    public async Task ChangePassword(PasswordPair passwords, ClaimsPrincipal userPrincipal)
+    {
+        User user = await _userManager.GetUserAsync(userPrincipal)
+            ?? throw new BackendException(404, "Requested user does not exist.");
+        
+        var res = await _userManager.ChangePasswordAsync(
+            user,
+            passwords.OldPassword,
+            passwords.NewPassword
+        );
+
+        if (!res.Succeeded) {
+            throw new BackendException(400, res.Errors.First().Description);
+        }
     }
 }

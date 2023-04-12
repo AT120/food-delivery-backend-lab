@@ -92,4 +92,23 @@ public class AuthController : ControllerBase
             return Problem(be.UserMessage, statusCode: be.StatusCode);
         }
     } 
+
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<ActionResult> ChangePassword(PasswordPair passwords)
+    {
+        try
+        {
+            await _authService.ChangePassword(passwords, User);
+            return Ok();
+        }
+        catch (BackendException be) //TODO: удобно, но не отображает сути
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode);
+        }
+        catch
+        {
+            return Problem("Unknown error", statusCode: 500);
+        }
+    }
 }

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BackendApi.Models;
+namespace BackendCommon.DTO;
 
 public class Rating
 {   

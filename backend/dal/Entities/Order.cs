@@ -12,6 +12,6 @@ public class Order
 
     public Restaurant Restaurant { get; set; }
     public OrderStatus Status { get; set; }
-    public Guid? CookId { get; set; }
-    public Guid? CourierId { get; set; }
+    public Cook  Cook { get; set; }
+    public Courier Courier { get; set; }
 }

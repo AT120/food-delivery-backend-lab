@@ -3,6 +3,7 @@ using AuthBL;
 using AuthBL.Services;
 using AuthCommon.Interfaces;
 using AuthDAL;
+using BackendDAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using ProjCommon;
@@ -48,7 +49,6 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -56,7 +56,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.MigrateAuthDBWhenNecessary();
+    app.MigrateDBWhenNecessary<AuthDBContext>();
 }
 
 // await app.UpdateRolesAndClaims();

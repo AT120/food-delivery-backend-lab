@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackendDAL;
 
-public class DefaultDBContext : DbContext
+public class BackendDBContext : DbContext
 {
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Dish> Dishes { get; set; }
@@ -12,6 +12,11 @@ public class DefaultDBContext : DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<Restaurant> Restaurants { get; set; }
     
+    public BackendDBContext(DbContextOptions<BackendDBContext> options) : base(options)
+    {
+        
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
