@@ -6,17 +6,26 @@ namespace BackendDAL.Entities;
 public class Dish
 {
     public Guid Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } 
     public int Price { get; set; }
-    public string Description { get; set; }
+    public string Description { get; set; }  // changable
     public bool IsVegetarian { get; set; }
 
     [Url]
-    public string PhotoURL { get; set; }
-    public DishCategory Category { get; set; }
+    public string PhotoURL { get; set; }  // changable
+    public DishCategory Category { get; set; }  // changable
 
+    public Guid RestaurantId { get; set; }
+    public Restaurant Restaurant { get; set; }
+
+    public int? MenuId { get; set; }
+    public Menu? Menu { get; set; }
+    
     [Range(0, 10)]
     public double Rating { get; set; }
     public int PeopleRated { get; set; }
+
+    public bool Archived { get; set; }
+
 
 }

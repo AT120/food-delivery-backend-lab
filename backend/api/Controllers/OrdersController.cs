@@ -53,12 +53,4 @@ public class OrdersController : ControllerBase
         return Problem("This method has not been yet implemented", statusCode: 501); 
     }
 
-
-
-
-
-
-
-    
-
 }

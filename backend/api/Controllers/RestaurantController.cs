@@ -38,7 +38,7 @@ public class RestaurantController : ControllerBase
         {
             return Problem(be.UserMessage, statusCode: be.StatusCode);
         }
-        catch
+        catch   
         {
             return Problem("Unknown error", statusCode: 500);
         }

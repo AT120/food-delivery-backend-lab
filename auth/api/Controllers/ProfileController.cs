@@ -29,13 +29,29 @@ public class ProfileController : ControllerBase
         {
             return Problem(be.UserMessage, statusCode: be.StatusCode);
         }
+        catch
+        {
+            return Problem("Unknown error", statusCode: 500);
+        }
     }
 
     [Authorize]
     [HttpPut]
     public async Task<ActionResult> UpdateUserProfile(UserProfileEdit profile)
     {
-        return Problem("This method has not been yet implemented", statusCode: 501); 
+        try
+        {
+            await _profileService.UpdateUserProfile(profile, User);
+            return Ok();
+        }
+        catch (BackendException be)
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode);
+        }
+        catch
+        {
+            return Problem("Unknown error", statusCode: 500);
+        }
     }
     
 

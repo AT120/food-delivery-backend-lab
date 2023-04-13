@@ -102,7 +102,7 @@ public class AuthController : ControllerBase
             await _authService.ChangePassword(passwords, User);
             return Ok();
         }
-        catch (BackendException be) //TODO: удобно, но не отображает сути
+        catch (BackendException be)
         {
             return Problem(be.UserMessage, statusCode: be.StatusCode);
         }

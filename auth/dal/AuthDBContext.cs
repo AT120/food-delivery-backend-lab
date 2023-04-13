@@ -8,7 +8,7 @@ public class AuthDBContext : IdentityDbContext<User, Role, Guid>
 {
     public DbSet<Cook> Cooks { get; set; }
     public DbSet<Courier> Couriers { get; set; }
-    public DbSet<Customer> Customers { get; set; } //TODO: address дублируется в клэймах
+    public DbSet<Customer> Customers { get; set; }
     public DbSet<Manager> Managers { get; set; }
     public DbSet<IssuedToken> Tokens { get; set; }
 

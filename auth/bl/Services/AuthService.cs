@@ -117,13 +117,24 @@ public class AuthService : IAuthService
         var res = await _userManager.CreateAsync(user, creds.Password);
         if (!res.Succeeded)
             throw new BackendException(400, res.Errors.First().Description);
-        if (creds.Address is not null)
+
+        res = await _userManager.AddToRoleAsync(user, Enum.GetName(RoleType.Customer));
+        if (!res.Succeeded)
+            throw new BackendException(
+                500,
+                "An error occured while creating the user",
+                $"Failed to add user to role {res.Errors}"
+            );
+
+        await _dbcontext.Customers.AddAsync(new Customer
         {
-            // await CreateCustomer(user, creds.Address);
-        }
+            Address = creds.Address,
+            BaseUser = user,
+            Id = user.Id
+        });
 
+        await _dbcontext.SaveChangesAsync();
         return await GenerateTokenPair(user);
-
     }
 
 

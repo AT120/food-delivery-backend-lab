@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Security.Cryptography;
 using AuthCommon.DTO;
 using AuthCommon.Interfaces;
 using AuthDAL;
@@ -26,47 +25,28 @@ public class ProfileService : IProfileService
         _roleManager = rm;
     }
 
+    public override bool Equals(object? obj)
+    {
+        return base.Equals(obj);
+    }
 
-    //TODO: аче
-    // public static async Task CreateCustomer(User user, string address, )
-    // {
-    //     var res = await _userManager.AddClaimAsync(
-    //         user,
-    //         ClaimsHelper.CreateClaim(ClaimType.Address, address)
-    //     );
-    //     if (!res.Succeeded)
-    //         throw new BackendException(
-    //             500,
-    //             "An error occured while creating the user",
-    //             $"Failed to create claim {res.Errors}"
-    //         );
-    //     res = await _userManager.AddToRoleAsync(user, Enum.GetName(RoleType.Customer));
-    //     if (!res.Succeeded)
-    //         throw new BackendException(
-    //             500,
-    //             "An error occured while creating the user",
-    //             $"Failed to add user to role {res.Errors}"
-    //         );
-
-    //     await _dbcontext.Customers.AddAsync(new Customer
-    //     {
-    //         Address = address,
-    //         BaseUser = user,
-    //         Id = user.Id
-    //     });
-
-    //     await _dbcontext.SaveChangesAsync();
-    // }
-
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 
     public async Task<UserProfile> GetUserProfile(ClaimsPrincipal userPrincipal)
     {
         var user = await _userManager.GetUserAsync(userPrincipal)
             ?? throw new BackendException(404, "Requested user does not exist.");
-        var claims = await _userManager.GetClaimsAsync(user);
         var roles = await _userManager.GetRolesAsync(user);
 
-        var addr = claims.FirstOrDefault(x => x.Type == ClaimType.Address.ToString())?.Value;
+
+        var customer = await  _dbcontext.Customers
+                .FindAsync(user.Id);
+        var addr = customer?.Address;
+                
+        
         return new UserProfile
         {
             BirthDate = user.BirthDate,
@@ -79,6 +59,11 @@ public class ProfileService : IProfileService
         };
     }
 
+    public override string? ToString()
+    {
+        return base.ToString();
+    }
+
     public async Task UpdateUserProfile(UserProfileEdit newProfile, ClaimsPrincipal userPrincipal)
     {
         var user = await _userManager.GetUserAsync(userPrincipal)
@@ -89,7 +74,17 @@ public class ProfileService : IProfileService
         user.Gender = newProfile.Gender ?? user.Gender;
         user.PhoneNumber = newProfile.PhoneNumber ?? user.PhoneNumber;
 
-
-
+        if (newProfile.Address is not null)
+        {
+            Customer customer = await _dbcontext.Customers.FindAsync(user.Id)
+                ?? throw new BackendException(
+                    400,
+                    "Can't assign address. You are not a customer?",
+                    $"Address assigning error for user: {user.Id}"
+                );
+            customer.Address = newProfile.Address;
+        }
+        await _dbcontext.SaveChangesAsync();
+        await _userManager.UpdateAsync(user);
     }
 }

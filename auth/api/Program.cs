@@ -44,7 +44,6 @@ builder.Services.AddAuthorization(options =>
     options.AddRefreshOnlyPolicy();
 });
  
-
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 
