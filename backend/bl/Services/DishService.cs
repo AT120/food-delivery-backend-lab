@@ -98,14 +98,7 @@ public class DishService : IDishService
         int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
 
         var dishes = await query
-            .Select(d => new DishShort
-            {
-                Id = d.Id,
-                IsVegetarian = d.IsVegetarian,
-                Name = d.Name,
-                PhotoUrl = d.PhotoURL,
-                Price = d.Price,
-            })
+            .Select(d => Converter.GetShortDish(d))
             .Skip(rangeStart)
             .Take(PageSize.Default)
             .ToListAsync();

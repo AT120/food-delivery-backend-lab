@@ -1,6 +1,6 @@
 namespace BackendCommon.DTO;
 
-public class DishInCart
+public class DishInCartDTO
 {
     public DishShort Dish { get; set; }
     public int Count { get; set; }

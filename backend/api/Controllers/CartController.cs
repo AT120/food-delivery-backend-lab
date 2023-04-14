@@ -11,7 +11,7 @@ public class CartController : ControllerBase
 {
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<Cart>> GetCart()
+    public async Task<ActionResult<CartDTO>> GetCart()
     {
         return Problem("This method has not been yet implemented", statusCode: 501); 
     }
