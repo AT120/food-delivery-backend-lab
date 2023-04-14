@@ -2,6 +2,7 @@ using AuthDAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ProjCommon;
 using ProjCommon.Enums;
 
 namespace AuthBL;

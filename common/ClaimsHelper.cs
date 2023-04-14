@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using ProjCommon.Enums;
 
-namespace AuthBL;
+namespace ProjCommon;
 
 public static class ClaimsHelper
 {
@@ -21,7 +21,7 @@ public static class ClaimsHelper
     }
 
 
-    public static T GetValue<T>(string type, ClaimsPrincipal user) 
+    public static T? GetValue<T>(string type, ClaimsPrincipal user) 
     {
         var converter = _converters[type]
             ?? throw new ArgumentException("There is no converter for specified type");

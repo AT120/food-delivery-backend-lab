@@ -3,14 +3,13 @@ using BackendCommon.DTO;
 using BackendCommon.Enums;
 using BackendCommon.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ProjCommon.Exceptions;
 
 namespace BackendApi.Controllers;
 
 [ApiController]
-[Route("/api/restaurants/{restaurantId}/dishes")]
+[Route("/api/restaurants/dishes")]
 public class DishesController : ControllerBase
 {
 
@@ -21,7 +20,7 @@ public class DishesController : ControllerBase
     }
     
 
-    [HttpGet]
+    [HttpGet("/api/restaurants/{restaurantId}/dishes")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,9 +62,20 @@ public class DishesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<DishDetailed>> GetDishInfo(Guid restaurantId, Guid dishId)
-    {
-        return Problem("This method has not been yet implemented", statusCode: 501);
+    public async Task<ActionResult<DishDetailed>> GetDishInfo(Guid dishId)
+    {   
+        try
+        {
+            return await _dishService.GetDish(dishId, User);
+        }
+        catch (BackendException be)
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode);
+        }
+        catch
+        {
+            return Problem("Unknown error", statusCode: 500);
+        }
     }
 
     [HttpPut("{dishId}/rating")]
@@ -75,7 +85,19 @@ public class DishesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> RateDish(Guid dishId, Rating rating)
     {
-        return Problem("This method has not been yet implemented", statusCode: 501); 
+        try
+        {
+            await _dishService.RateDish(dishId, User, rating.value);
+            return Ok();
+        }
+        catch (BackendException be)
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode);
+        }
+        catch
+        {
+            return Problem("Unknown error", statusCode: 500);
+        }
     }
 
 }

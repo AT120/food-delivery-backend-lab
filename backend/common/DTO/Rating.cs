@@ -4,6 +4,6 @@ namespace BackendCommon.DTO;
 
 public class Rating
 {   
-    [Range(0, 10)]
+    [Range(1, 10)]
     public int value { get; set; }
 }

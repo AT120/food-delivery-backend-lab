@@ -5,6 +5,7 @@ namespace BackendDAL.Entities;
 public class Order
 {
     public int Id { get; set; }
+    public Guid CustomerId { get; set; }
     public DateTime OrderTime { get; set; }
     public DateTime? DeliveryTime { get; set; }
     public int FinalPrice { get; set; }

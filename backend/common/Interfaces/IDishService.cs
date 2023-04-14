@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BackendCommon.DTO;
 using BackendCommon.Enums;
 
@@ -12,4 +13,7 @@ public interface IDishService
         IEnumerable<int>? menus,
         IEnumerable<DishCategory>? categories,
         SortingTypes sorting);
+    
+    Task<DishDetailed> GetDish(Guid dishId, ClaimsPrincipal user);
+    Task RateDish(Guid dishId, ClaimsPrincipal userPrincipal, int newRating);
 }
