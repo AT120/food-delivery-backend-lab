@@ -1,4 +1,4 @@
-using BackendApi.FIlters;
+using BackendApi.Filters;
 using BackendBl.Services;
 using BackendCommon.Interfaces;
 using BackendDAL;
@@ -19,9 +19,13 @@ builder.Services.AddJwtAuthentication();
 builder.Services.AddSwaggerGen( c => 
 {
     c.SchemaFilter<EnumSchemaFilter>();
+    // c.UseInlineDefinitionsForEnums();
+    // c.UseOneOfForPolymorphism();
 });
 
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
+builder.Services.AddScoped<IDishService, DishService>();
+
 
 var app = builder.Build();
 

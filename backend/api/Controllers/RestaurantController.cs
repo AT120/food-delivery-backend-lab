@@ -1,3 +1,4 @@
+using BackendBl;
 using BackendCommon.DTO;
 using BackendCommon.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -27,12 +28,11 @@ public class RestaurantController : ControllerBase
     {
         try
         {
-            var page = await _restaurantService.GetRestaurants(pageNum ?? 1, nameQuery);
-            Response.Headers.ContentRange =$"restaurants {page.RangeStart}-{page.RangeEnd}/{page.Size}";
-            int statusCode = ((page.RangeEnd - page.RangeStart) < page.Size) ? 206 : 200;
-            return StatusCode(statusCode, page.Restaurants);
-            
-            //TODO: Пустой список или 404, 204?
+            var restaurantsPage = await _restaurantService.GetRestaurants(pageNum ?? 1, nameQuery);
+            var page = restaurantsPage.Page;
+            Response.Headers.ContentRange = PaginationHelper.FillContentRange(page); 
+            int statusCode = PaginationHelper.GetStatusCode(page);
+            return StatusCode(statusCode, restaurantsPage.Restaurants);
         }
         catch (BackendException be)
         {
@@ -45,12 +45,22 @@ public class RestaurantController : ControllerBase
     }
 
 
-    //А мож меню вместе с ресторанами возвращать?
     [HttpGet("{restaurantId}/menus")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ICollection<Menu>>> GetMenus(Guid restaurantId)
+    public async Task<ActionResult<ICollection<MenuDTO>>> GetMenus(Guid restaurantId)
     {
-        return Problem("This method has not been yet implemented", statusCode: 501); 
+        try
+        {
+            return Ok(await _restaurantService.GetMenus(restaurantId));
+        }
+        catch (BackendException be)
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode);
+        }
+        catch   
+        {
+            return Problem("Unknown error", statusCode: 500);
+        }
     }
 }

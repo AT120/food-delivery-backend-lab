@@ -7,5 +7,6 @@ public class Menu
 
     public ICollection<Dish> Dishes { get; set; }
 
-    
+    public Guid RestaurantId { get; set; }
+    public Restaurant Restaurant { get; set; }
 }

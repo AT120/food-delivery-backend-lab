@@ -1,4 +1,4 @@
-using BackendCommon.DTO;
+using BackendCommon.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

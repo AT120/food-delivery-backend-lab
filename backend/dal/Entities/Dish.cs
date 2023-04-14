@@ -18,8 +18,8 @@ public class Dish
     public Guid RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; }
 
-    public int? MenuId { get; set; }
-    public Menu? Menu { get; set; }
+    public int MenuId { get; set; }
+    public Menu Menu { get; set; }
     
     [Range(0, 10)]
     public double Rating { get; set; }

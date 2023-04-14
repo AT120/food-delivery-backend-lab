@@ -1,3 +1,5 @@
+using BackendCommon.Enums;
+
 namespace BackendCommon.DTO;
 
 public class Order

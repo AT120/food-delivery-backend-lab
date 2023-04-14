@@ -1,11 +1,8 @@
 using System.Data;
-using System.Formats.Tar;
 using BackendCommon.Const;
 using BackendCommon.DTO;
 using BackendCommon.Interfaces;
 using BackendDAL;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.EntityFrameworkCore;
 using ProjCommon.Exceptions;
 
@@ -24,13 +21,7 @@ public class RestaurantService : IRestaurantService
     {
         if (page < 1)
             throw new BackendException(400, "Incorrect page number");
-        
-        int size = await _dbcontext.Restaurants.CountAsync();
-        int rangeStart = PageSize.Default * (page-1);
-        int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
-
-        if (rangeStart > size)
-            throw new BackendException(400, "Incorrect page number");           
+          
             
         var query = 
             _dbcontext.Restaurants
@@ -42,17 +33,44 @@ public class RestaurantService : IRestaurantService
 
         if (searchQuery is not null)
             query = query.Where(r => r.Name.Contains(searchQuery));
+
+        int size = await query.CountAsync();
+        int rangeStart = PageSize.Default * (page-1);
+        int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
+
+        if (rangeStart > size)
+            throw new BackendException(400, "Incorrect page number");     
         
         var restaurants = await query
                 .Skip(rangeStart)
                 .Take(PageSize.Default)
                 .ToListAsync();
         
+        // var t = new RestaurantsPage();
+        // t.Page.RangeStart = 1;
         return new RestaurantsPage {
-            RangeStart = rangeStart,
-            RangeEnd = rangeEnd,
-            Size = size,
+            Page = new PageInfo {
+                RangeStart = (size == 0) ? 0 : rangeStart + 1,
+                RangeEnd = rangeEnd,
+                Size = size,
+            },
             Restaurants = restaurants
         };
+    }
+
+    public async Task<ICollection<MenuDTO>> GetMenus(Guid restaurantId)
+    {
+        var restExists = await  _dbcontext.Restaurants.AnyAsync(x => x.Id == restaurantId);
+        if (!restExists)
+            throw new BackendException(404, "Requested restaurant does not exist.");
+
+        return await _dbcontext.Menus
+            .Where(m => m.RestaurantId == restaurantId) //TODO: и не скрыто
+            .Select(m => new MenuDTO 
+            {
+                Id = m.Id,
+                Name = m.Name,
+            })
+            .ToListAsync();
     }
 }
