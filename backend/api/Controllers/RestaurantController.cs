@@ -29,10 +29,10 @@ public class RestaurantController : ControllerBase
         try
         {
             var restaurantsPage = await _restaurantService.GetRestaurants(pageNum ?? 1, nameQuery);
-            var page = restaurantsPage.Page;
+            var page = restaurantsPage.PageInfo;
             Response.Headers.ContentRange = PaginationHelper.FillContentRange(page); 
             int statusCode = PaginationHelper.GetStatusCode(page);
-            return StatusCode(statusCode, restaurantsPage.Restaurants);
+            return StatusCode(statusCode, restaurantsPage.Items);
         }
         catch (BackendException be)
         {

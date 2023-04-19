@@ -48,7 +48,7 @@ public class DishService : IDishService
     }
 
 
-    public async Task<DishesPage> GetDishes(
+    public async Task<Page<DishShort>> GetDishes(
         Guid restaurantId,
         int page,
         bool vegetarianOnly,
@@ -91,7 +91,7 @@ public class DishService : IDishService
             query = query.Where(filter);
         }
 
-        query = SortingHelper.SortingFuncs[sorting](query);
+        query = SortingHelper.DishSortingFuncs[sorting](query);
 
         int size = await query.CountAsync();
         int rangeStart = PageSize.Default * (page - 1);
@@ -103,15 +103,15 @@ public class DishService : IDishService
             .Take(PageSize.Default)
             .ToListAsync();
 
-        return new DishesPage
+        return new Page<DishShort>
         {
-            Page = new PageInfo
+            PageInfo = new PageInfo
             {
                 RangeStart = (size == 0) ? 0 : rangeStart + 1,
                 RangeEnd = rangeEnd,
                 Size = size,
             },
-            Dishes = dishes
+            Items = dishes
         };
     }
 
@@ -120,18 +120,13 @@ public class DishService : IDishService
         var dish = await _dbcontext.Dishes.FindAsync(dishId)
             ?? throw new BackendException(404, "Requested dish does not exist.");
 
-        bool userCanRate = false;
-        int? previousRating = null;
-        try
-        {
-            Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
-            var rating = await _dbcontext.RatedDishes
-                .FindAsync(new { userId, dishId });
 
-            userCanRate = rating is not null;
-            previousRating = rating?.Rating;
-        }
-        catch { }
+        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
+        var rating = await _dbcontext.RatedDishes
+            .FindAsync(new { userId, dishId });
+
+        bool userCanRate = rating is not null;
+        int? previousRating = rating?.Rating;
 
         return new DishDetailed
         {

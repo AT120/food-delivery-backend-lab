@@ -15,20 +15,20 @@ public class BackendDBContext : DbContext
     public DbSet<Menu> Menus { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderedDish> OrderedDishes { get; set; }
-    public DbSet<RatedDish> RatedDishes  { get; set; }
+    public DbSet<RatedDish> RatedDishes { get; set; }
     public DbSet<Restaurant> Restaurants { get; set; }
-    
+
 
     public BackendDBContext(DbContextOptions<BackendDBContext> options) : base(options)
     {
-        
+
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.Entity<DishInCart>().HasKey(d => new {d.CustomerId, d.DishId});
-        builder.Entity<OrderedDish>().HasKey(d => new {d.OrderId, d.DishId});
-        builder.Entity<RatedDish>().HasKey(d => new {d.CustomerId, d.DishId});
+        builder.Entity<DishInCart>().HasKey(d => new { d.CustomerId, d.DishId });
+        builder.Entity<OrderedDish>().HasKey(d => new { d.OrderId, d.DishId });
+        builder.Entity<RatedDish>().HasKey(d => new { d.CustomerId, d.DishId });
         builder.Entity<Order>().Property(o => o.Id).UseIdentityColumn();
         builder.Entity<Menu>().Property(m => m.Id).UseIdentityColumn();
         // builder.Entity<Customer>()

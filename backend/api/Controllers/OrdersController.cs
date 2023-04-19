@@ -13,12 +13,23 @@ public class OrdersController : ControllerBase
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ICollection<Order>>> Get(
+    public async Task<ActionResult<ICollection<CustomerOrderShortDTO>>> Get(
         int? page,
         DateTime? startDate,
-        DateTime? endDate,
-        OrderFilterStatus? status, //TODO: EnumSchemaFilter https://avarnon.medium.com/how-to-show-enums-as-strings-in-swashbuckle-aspnetcore-628d0cc271e6
-        int? orderId)
+        DateTime? endDate,          
+        int status, //TODO: прописать в доку, что тут типо из OrderStatus
+        string? orderIdQuery)
+        //TODO: EnumSchemaFilter https://avarnon.medium.com/how-to-show-enums-as-strings-in-swashbuckle-aspnetcore-628d0cc271e6
+    {
+        return Problem("This method has not been yet implemented", statusCode: 501);
+    }
+
+
+    [HttpGet("{orderId}")]
+    [Authorize] //TODO: role = customer
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<CustomerDetailedOrderDTO>> GetOrder()
     {
         return Problem("This method has not been yet implemented", statusCode: 501);
     }
@@ -27,7 +38,7 @@ public class OrdersController : ControllerBase
     [Authorize]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<OrderId>> CreateOrder()
+    public async Task<ActionResult<int>> CreateOrder() //TODO: OrderId или int?
     {
         return Problem("This method has not been yet implemented", statusCode: 501); 
     }

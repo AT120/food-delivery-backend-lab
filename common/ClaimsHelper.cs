@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using ProjCommon.Enums;
 
 namespace ProjCommon;
@@ -21,7 +22,7 @@ public static class ClaimsHelper
     }
 
 
-    public static T? GetValue<T>(string type, ClaimsPrincipal user) 
+    public static T GetValue<T>(string type, ClaimsPrincipal user) 
     {
         var converter = _converters[type]
             ?? throw new ArgumentException("There is no converter for specified type");
@@ -32,4 +33,7 @@ public static class ClaimsHelper
         return (T)converter(value)
             ?? throw new ArgumentException("Can't cast claim to specified type.");
     }
+
+    public static Guid GetUserId(ClaimsPrincipal user) =>
+        GetValue<Guid>(ClaimType.UserId, user);
 }

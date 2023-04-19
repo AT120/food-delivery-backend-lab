@@ -6,7 +6,7 @@ namespace BackendCommon.Interfaces;
 
 public interface IDishService
 {
-    Task<DishesPage> GetDishes(
+    Task<Page<DishShort>> GetDishes(
         Guid restaurantId,
         int page,
         bool vegetarianOnly,

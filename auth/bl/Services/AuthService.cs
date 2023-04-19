@@ -132,7 +132,7 @@ public class AuthService : IAuthService
             BaseUser = user,
             Id = user.Id
         });
-
+        
         await _dbcontext.SaveChangesAsync();
         return await GenerateTokenPair(user);
     }

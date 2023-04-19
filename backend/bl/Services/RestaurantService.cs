@@ -17,7 +17,7 @@ public class RestaurantService : IRestaurantService
         _dbcontext = dc;
     }
 
-    public async Task<RestaurantsPage> GetRestaurants(int page, string? searchQuery)
+    public async Task<Page<RestaurantDTO>> GetRestaurants(int page, string? searchQuery)
     {
         if (page < 1)
             throw new BackendException(400, "Incorrect page number");
@@ -48,13 +48,13 @@ public class RestaurantService : IRestaurantService
         
         // var t = new RestaurantsPage();
         // t.Page.RangeStart = 1;
-        return new RestaurantsPage {
-            Page = new PageInfo {
+        return new Page<RestaurantDTO> {
+            PageInfo = new PageInfo {
                 RangeStart = (size == 0) ? 0 : rangeStart + 1,
                 RangeEnd = rangeEnd,
                 Size = size,
             },
-            Restaurants = restaurants
+            Items = restaurants
         };
     }
 

@@ -14,7 +14,7 @@ public static class SortingHelper
         SortingTypes,
         Func<IQueryable<Dish>, IOrderedQueryable<Dish>>
     > 
-    SortingFuncs = new()
+    DishSortingFuncs = new()
     {
         {SortingTypes.NameAsc, x => x.OrderBy(y => y.Name)},
         {SortingTypes.NameDesc, x => x.OrderByDescending(y => y.Name)},
@@ -24,4 +24,16 @@ public static class SortingHelper
         {SortingTypes.RatingDesc, x => x.OrderByDescending(y => y.Rating)},
     };
 
+    public static readonly Dictionary
+    <
+        StaffOrderSortingTypes,
+        Func<IQueryable<Order>, IOrderedQueryable<Order>>
+    > 
+    StaffSortingFuncs = new()
+    {
+        {StaffOrderSortingTypes.CreationTimeAsc, x => x.OrderBy(y => y.OrderTime)},
+        {StaffOrderSortingTypes.CreationTimeDesc, x => x.OrderByDescending(y => y.OrderTime)},
+        {StaffOrderSortingTypes.DeliveryTimeAsc, x => x.OrderBy(y => y.DeliveryTime)},
+        {StaffOrderSortingTypes.DeliveryTimeDesc, x => x.OrderByDescending(y => y.DeliveryTime)},
+    };
 }

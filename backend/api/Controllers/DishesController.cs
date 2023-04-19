@@ -42,10 +42,10 @@ public class DishesController : ControllerBase
                 categories,
                 sorting ?? SortingTypes.PriceAsc
             );
-            var pageInfo = res.Page;
+            var pageInfo = res.PageInfo;
             Response.Headers.ContentRange = PaginationHelper.FillContentRange(pageInfo); 
             int statusCode = PaginationHelper.GetStatusCode(pageInfo);
-            return StatusCode(statusCode, res.Dishes);
+            return StatusCode(statusCode, res.Items);
         }
         catch (BackendException be)
         {

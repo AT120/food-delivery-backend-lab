@@ -1,5 +1,7 @@
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using BackendCommon.DTO;
+using BackendCommon.Interfaces;
 using BackendDAL;
 using BackendDAL.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +11,7 @@ using ProjCommon.Exceptions;
 
 namespace BackendBl.Services;
 
-public class CartService
+public class CartService : ICartService
 {
     private readonly BackendDBContext _dbcontext;
     public CartService(BackendDBContext dc)
@@ -45,8 +47,9 @@ public class CartService
             ?? throw new BackendException(404, "Requested dish does not exist.");
         if (dish.Archived)
             throw new BackendException(400, "This dish is archived and can not be added into the cart.")
-        
-        await _dbcontext.DishesInCart.AddAsync(new DishInCart 
+
+
+        await _dbcontext.DishesInCart.AddAsync(new DishInCart
         {
             Count = dishModel.Count,
             CustomerId = userId,
@@ -56,5 +59,34 @@ public class CartService
         await _dbcontext.SaveChangesAsync();
     }
 
-    
+
+    public async Task ChangeDishQunatity(Guid dishId, ClaimsPrincipal user, int count)
+    {
+        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
+        DishInCart dishInCart = await _dbcontext.DishesInCart.FindAsync(new { userId, dishId })
+            ?? throw new BackendException(404, "Requested dish is absent in user's cart.");
+
+        dishInCart.Count = count;
+        await _dbcontext.SaveChangesAsync();
+    }
+
+
+    public async Task DeleteDishFromCart(Guid dishId, ClaimsPrincipal user)
+    {
+        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
+        await _dbcontext.DishesInCart
+            .Where(d => d.CustomerId == userId && d.DishId == dishId)
+            .ExecuteDeleteAsync();
+    }
+
+
+    public async Task CleanCart(ClaimsPrincipal user)
+    {
+        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
+        await _dbcontext.DishesInCart
+            .Where(d => d.CustomerId == userId)
+            .ExecuteDeleteAsync();
+    }
+
+
 }

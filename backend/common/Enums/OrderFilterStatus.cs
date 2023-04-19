@@ -1,6 +1,4 @@
-using System.Diagnostics;
-
-namespace BackendCommon.DTO;
+namespace BackendCommon.Enums;
 
 public enum OrderFilterStatus
 {
