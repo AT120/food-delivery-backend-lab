@@ -2,6 +2,7 @@ using BackendCommon.DTO;
 using BackendCommon.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProjCommon;
 using ProjCommon.Exceptions;
 
 namespace BackendApi.Controllers;
@@ -24,7 +25,7 @@ public class CartController : ControllerBase
     {
         try
         {
-            return await _cartService.GetCart(User);
+            return await _cartService.GetCart(ClaimsHelper.GetUserId(User));
         }
         catch (BackendException be)
         {
@@ -46,7 +47,7 @@ public class CartController : ControllerBase
     {
         try
         {
-            await _cartService.PutDishIntoCart(dishCount, User);
+            await _cartService.PutDishIntoCart(dishCount, ClaimsHelper.GetUserId(User));
             return Ok();
         }
         catch (BackendException be)
@@ -69,7 +70,7 @@ public class CartController : ControllerBase
     {
         try
         {
-            await _cartService.ChangeDishQunatity(dishId, User, newCount.value);
+            await _cartService.ChangeDishQunatity(dishId, newCount.value, ClaimsHelper.GetUserId(User));
             return Ok();
         }
         catch (BackendException be)
@@ -91,7 +92,7 @@ public class CartController : ControllerBase
     {
         try
         {
-            await _cartService.DeleteDishFromCart(dishId, User);
+            await _cartService.DeleteDishFromCart(dishId, ClaimsHelper.GetUserId(User));
             return Ok();
         }
         catch (BackendException be)
@@ -113,7 +114,7 @@ public class CartController : ControllerBase
     {
         try
         {
-            await _cartService.CleanCart(User);
+            await _cartService.CleanCart(ClaimsHelper.GetUserId(User));
             return Ok();
         }
         catch (BackendException be)

@@ -17,7 +17,7 @@ namespace BackendBl.Services;
 public class OrderService : IOrderService
 {
     private readonly BackendDBContext _dbcontext;
-    private readonly CartService _cartService;
+    private readonly ICartService _cartService;
     public OrderService(BackendDBContext dc, CartService cs)
     {
         _dbcontext = dc;
@@ -38,7 +38,7 @@ public class OrderService : IOrderService
     }
 
     public async Task<Page<CustomerOrderShortDTO>> GetOrders(
-        ClaimsPrincipal user,
+        Guid userId,
         int page,
         DateTime? startDate,
         DateTime? endDate,
@@ -46,8 +46,6 @@ public class OrderService : IOrderService
         int? orderIdQuery //TODO: Sorting
     )
     {
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
-
         var query = _dbcontext.Orders
             .Where(o =>
                 ((int)o.Status & status) != 0 &&
@@ -95,12 +93,11 @@ public class OrderService : IOrderService
 
 
     public async Task<int> CreateOrderFromCart(
-        ClaimsPrincipal user,
+        Guid userId,
         string address,
         DateTime deliveryTime
     )
     {
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
         var dishesToOrder = await _dbcontext.DishesInCart
             .Where(d => d.CustomerId == userId)
             .Include(d => d.Dish)
@@ -146,17 +143,15 @@ public class OrderService : IOrderService
             });
         }
         
-        await _cartService.CleanCart(user);
+        await _cartService.CleanCart(userId);
         await _dbcontext.SaveChangesAsync();
 
         return order.Id;
     }
 
 
-    public async Task RepeatOrder(int orderId, ClaimsPrincipal user)
-    {
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
-        
+    public async Task RepeatOrder(int orderId, Guid userId)
+    {        
         var prevOrder = await _dbcontext.Orders
             .Where(o => o.Id == orderId && o.CustomerId == userId)
             .Include(o => o.Dishes)
@@ -181,9 +176,8 @@ public class OrderService : IOrderService
     }
 
 
-    public async Task CancelOrder(int orderId, ClaimsPrincipal user)
+    public async Task CancelOrder(int orderId, Guid userId)
     {
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
         var order = await _dbcontext.Orders
             .Where(o => o.Id == orderId && o.CustomerId == userId)
             .FirstOrDefaultAsync();
@@ -192,7 +186,7 @@ public class OrderService : IOrderService
             throw new BackendException(404, "User does not have orders with requested id");
         
         if (order.Status != OrderStatus.Created)
-            throw new BackendException(400, "Your order is already being processed. You can't cancel it.")
+            throw new BackendException(400, "Your order is already being processed. You can't cancel it.");
         
         //TODO: race condition
         order.Status = OrderStatus.Canceled;

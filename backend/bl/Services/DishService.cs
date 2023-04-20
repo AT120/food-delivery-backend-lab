@@ -26,7 +26,8 @@ public class DishService : IDishService
         _dbcontext = dc;
     }
 
-    public Expression<Func<TPropertyBase, bool>> GetOrExpression<T, TPropertyBase>(IEnumerable<T> possibleOptions, PropertyInfo property)
+    private static Expression<Func<TPropertyBase, bool>> 
+        GetOrExpression<T, TPropertyBase>(IEnumerable<T> possibleOptions, PropertyInfo property)
     {
         var arg = Expression.Parameter(typeof(TPropertyBase));
 
@@ -115,13 +116,12 @@ public class DishService : IDishService
         };
     }
 
-    public async Task<DishDetailed> GetDish(Guid dishId, ClaimsPrincipal user)
+
+    public async Task<DishDetailed> GetDish(Guid dishId, Guid userId)
     {
         var dish = await _dbcontext.Dishes.FindAsync(dishId)
             ?? throw new BackendException(404, "Requested dish does not exist.");
 
-
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
         var rating = await _dbcontext.RatedDishes
             .FindAsync(new { userId, dishId });
 
@@ -147,14 +147,13 @@ public class DishService : IDishService
 
     public async Task RateDish(
         Guid dishId,
-        ClaimsPrincipal userPrincipal,
-        int newRating)
+        int newRating,
+        Guid userId)
     {
         //TODO: mutex
         var dish = await _dbcontext.Dishes.FindAsync(dishId)
             ?? throw new BackendException(404, "Requested dish does not exist.");
 
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, userPrincipal);
         var ratedDish = await _dbcontext.RatedDishes.FindAsync(new { userId, dishId })
             ?? throw new BackendException(
                 403,

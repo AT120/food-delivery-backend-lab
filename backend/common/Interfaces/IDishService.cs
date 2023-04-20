@@ -12,8 +12,9 @@ public interface IDishService
         bool vegetarianOnly,
         IEnumerable<int>? menus,
         IEnumerable<DishCategory>? categories,
-        SortingTypes sorting);
+        SortingTypes sorting
+    );
     
-    Task<DishDetailed> GetDish(Guid dishId, ClaimsPrincipal user);
-    Task RateDish(Guid dishId, ClaimsPrincipal userPrincipal, int newRating);
+    Task<DishDetailed> GetDish(Guid dishId, Guid userId);
+    Task RateDish(Guid dishId, int newRating, Guid userId);
 }

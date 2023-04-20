@@ -5,9 +5,9 @@ namespace BackendCommon.Interfaces;
 
 public interface ICartService
 {
-    Task<CartDTO> GetCart(ClaimsPrincipal user);
-    Task PutDishIntoCart(DishCount dishModel, ClaimsPrincipal user);
-    Task ChangeDishQunatity(Guid dishId, ClaimsPrincipal user, int count);
-    Task DeleteDishFromCart(Guid dishId, ClaimsPrincipal user);
-    Task CleanCart(ClaimsPrincipal user);
+    Task<CartDTO> GetCart(Guid userId);
+    Task PutDishIntoCart(DishCount dishModel, Guid userId);
+    Task ChangeDishQunatity(Guid dishId, int count, Guid userId);
+    Task DeleteDishFromCart(Guid dishId, Guid userId);
+    Task CleanCart(Guid userId);
 }

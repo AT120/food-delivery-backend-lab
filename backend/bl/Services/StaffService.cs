@@ -3,6 +3,7 @@ using System.Security.Claims;
 using BackendCommon.Const;
 using BackendCommon.DTO;
 using BackendCommon.Enums;
+using BackendCommon.Interfaces;
 using BackendDAL;
 using BackendDAL.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ using ProjCommon.Exceptions;
 namespace BackendBl.Services;
 
 
-public class StaffService
+public class StaffService: IStaffService
 {
     private readonly BackendDBContext _dbcontext;
     public StaffService(BackendDBContext dc)
@@ -56,6 +57,7 @@ public class StaffService
         await _dbcontext.SaveChangesAsync();
     }
 
+
     private async Task NextStatusCourier(Order order, Guid userId)
     {
         if (!await _dbcontext.Couriers.AnyAsync(x => x.Id == userId))
@@ -74,9 +76,9 @@ public class StaffService
     }
 
 
-    public async Task NextStatus(int orderId, ClaimsIdentity user)
+    public async Task NextStatus(int orderId, ClaimsPrincipal user)
     {
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
+        Guid userId = ClaimsHelper.GetUserId(user);
         var userRoles = user.FindAll(x => x.Type == ClaimType.Role);
         var isCook = userRoles.Any(x => x.Value == RoleType.Cook.ToString());
         var isCourier = userRoles.Any(x => x.Value == RoleType.Courier.ToString());
@@ -263,19 +265,11 @@ public class StaffService
             throw new BackendException(403, "Unathorized");
     }
 
-    public async Task CancelOrder(int orderId, ClaimsIdentity user)
+    public async Task CancelOrder(int orderId, Guid userId)
     {
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
-        var isCourier = user.HasClaim(x =>
-            x.Type == ClaimType.Role &&
-            x.Value == RoleType.Courier.ToString()
-        );
-
         var order = await _dbcontext.Orders.FindAsync(orderId)
             ?? throw new BackendException(404, "There is no order with specified id.");
 
-        if (!isCourier)
-            throw UnauthorizedChangeStatus;
 
         if (!await _dbcontext.Couriers.AnyAsync(x => x.Id == userId))
             throw UnauthorizedChangeStatus;

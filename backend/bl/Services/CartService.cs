@@ -19,9 +19,8 @@ public class CartService : ICartService
         _dbcontext = dc;
     }
 
-    public async Task<CartDTO> GetCart(ClaimsPrincipal user)
+    public async Task<CartDTO> GetCart(Guid userId)
     {
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
         var dishes = await _dbcontext.DishesInCart
             .Where(d => d.CustomerId == userId)
             .Include(d => d.Dish)
@@ -40,13 +39,12 @@ public class CartService : ICartService
     }
 
 
-    public async Task PutDishIntoCart(DishCount dishModel, ClaimsPrincipal user)
+    public async Task PutDishIntoCart(DishCount dishModel, Guid userId)
     {
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
         var dish = await _dbcontext.Dishes.FindAsync(dishModel.Id)
             ?? throw new BackendException(404, "Requested dish does not exist.");
         if (dish.Archived)
-            throw new BackendException(400, "This dish is archived and can not be added into the cart.")
+            throw new BackendException(400, "This dish is archived and can not be added into the cart.");
 
 
         await _dbcontext.DishesInCart.AddAsync(new DishInCart
@@ -60,9 +58,8 @@ public class CartService : ICartService
     }
 
 
-    public async Task ChangeDishQunatity(Guid dishId, ClaimsPrincipal user, int count)
+    public async Task ChangeDishQunatity(Guid dishId, int count, Guid userId)
     {
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
         DishInCart dishInCart = await _dbcontext.DishesInCart.FindAsync(new { userId, dishId })
             ?? throw new BackendException(404, "Requested dish is absent in user's cart.");
 
@@ -71,18 +68,16 @@ public class CartService : ICartService
     }
 
 
-    public async Task DeleteDishFromCart(Guid dishId, ClaimsPrincipal user)
+    public async Task DeleteDishFromCart(Guid dishId, Guid userId)
     {
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
         await _dbcontext.DishesInCart
             .Where(d => d.CustomerId == userId && d.DishId == dishId)
             .ExecuteDeleteAsync();
     }
 
 
-    public async Task CleanCart(ClaimsPrincipal user)
+    public async Task CleanCart(Guid userId)
     {
-        Guid userId = ClaimsHelper.GetValue<Guid>(ClaimType.UserId, user);
         await _dbcontext.DishesInCart
             .Where(d => d.CustomerId == userId)
             .ExecuteDeleteAsync();

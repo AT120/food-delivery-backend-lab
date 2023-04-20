@@ -6,7 +6,7 @@ namespace BackendCommon.Interfaces;
 public interface IOrderService
 {
     Task<Page<CustomerOrderShortDTO>> GetOrders(
-        ClaimsPrincipal user,
+        Guid userId,
         int page,
         DateTime? startDate,
         DateTime? endDate,
@@ -17,11 +17,11 @@ public interface IOrderService
     Task<CustomerDetailedOrderDTO> GetOrder(int orderId, Guid userId);
 
     Task<int> CreateOrderFromCart(
-        ClaimsPrincipal user,
+        Guid userId,
         string address,
         DateTime deliveryTime
     );
 
-    Task RepeatOrder(int orderId, ClaimsPrincipal user);
-    Task CancelOrder(int orderId, ClaimsPrincipal user);
+    Task RepeatOrder(int orderId, Guid userId);
+    Task CancelOrder(int orderId, Guid userId);
 }

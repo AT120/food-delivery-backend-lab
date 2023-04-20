@@ -6,7 +6,7 @@ namespace BackendCommon.Interfaces;
 
 public interface IStaffService
 {
-    Task CancelOrder(int orderId, ClaimsIdentity user);
+    Task CancelOrder(int orderId, Guid userId);
 
     Task<Page<StaffOrderDTO>> GetOrders(
         int page,
@@ -23,5 +23,5 @@ public interface IStaffService
         Guid userId
     );
     
-    Task NextStatus(int orderId, ClaimsIdentity user);
+    Task NextStatus(int orderId, ClaimsPrincipal user);
 }

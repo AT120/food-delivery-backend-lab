@@ -4,6 +4,7 @@ using BackendCommon.Enums;
 using BackendCommon.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProjCommon;
 using ProjCommon.Exceptions;
 
 namespace BackendApi.Controllers;
@@ -66,7 +67,7 @@ public class DishesController : ControllerBase
     {   
         try
         {
-            return await _dishService.GetDish(dishId, User);
+            return await _dishService.GetDish(dishId, ClaimsHelper.GetUserId(User));
         }
         catch (BackendException be)
         {
@@ -87,7 +88,7 @@ public class DishesController : ControllerBase
     {
         try
         {
-            await _dishService.RateDish(dishId, User, rating.value);
+            await _dishService.RateDish(dishId, rating.value, ClaimsHelper.GetUserId(User));
             return Ok();
         }
         catch (BackendException be)

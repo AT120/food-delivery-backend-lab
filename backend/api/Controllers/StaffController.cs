@@ -1,9 +1,13 @@
+using System.Buffers;
+using BackendBl;
 using BackendCommon.DTO;
 using BackendCommon.Enums;
+using BackendCommon.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjCommon;
 using ProjCommon.Enums;
+using ProjCommon.Exceptions;
 
 namespace BackendApi.Controllers;
 
@@ -11,17 +15,46 @@ namespace BackendApi.Controllers;
 [ApiController]
 public class StaffController : ControllerBase
 {
+
+    private readonly IStaffService _staffService;
+
+    public StaffController(IStaffService ss)
+    {
+        _staffService = ss;
+    }
+
+    
     [HttpGet()]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    // [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetOrders(
         int? page,
-        OrderStatus status, //TODO: дописать в сваггере как работает несколько статусов.
-        int orderId,
+        int status, //TODO: дописать в сваггере как работает несколько статусов.
+        int? orderId,
         StaffOrderSortingTypes sorting) 
     {
-        return Ok();
+        try
+        {
+            var res = await _staffService.GetOrders(
+                page ?? 1,
+                status,
+                orderId,
+                sorting,
+                User
+            );
+            var pageInfo = res.PageInfo;
+            Response.Headers.ContentRange = PaginationHelper.FillContentRange(pageInfo); 
+            int statusCode = PaginationHelper.GetStatusCode(pageInfo);
+            return StatusCode(statusCode, res.Items);
+        }
+        catch (BackendException be)
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode);
+        }
+        catch   
+        {
+            return Problem("Unknown error", statusCode: 500);
+        } 
     }
 
     [HttpGet("in-delivery")]
@@ -33,7 +66,16 @@ public class StaffController : ControllerBase
     {
         try
         {
-            return await _cartService.GetCart(User);
+            var res = await _staffService.GetCourierOrders(
+                page ?? 1,
+                inDelivery ?? false,
+                sorting,
+                ClaimsHelper.GetUserId(User)
+            );
+            var pageInfo = res.PageInfo;
+            Response.Headers.ContentRange = PaginationHelper.FillContentRange(pageInfo); 
+            int statusCode = PaginationHelper.GetStatusCode(pageInfo);
+            return StatusCode(statusCode, res.Items);
         }
         catch (BackendException be)
         {
@@ -53,16 +95,40 @@ public class StaffController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)] //TODO: а мож не
     public async Task<ActionResult> AssignNextStatus(int orderId)
     {
-        return Problem("This method has not been yet implemented", statusCode: 501); 
+        try
+        {
+            await _staffService.NextStatus(orderId, User); 
+            return Ok();
+        }
+        catch (BackendException be)
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode);
+        }
+        catch   
+        {
+            return Problem("Unknown error", statusCode: 500);
+        }
     }
 
     [HttpDelete("{orderId}")]
+    [Authorize] //TODO: role courier
     [ProducesResponseType(StatusCodes.Status204NoContent)] 
     [ProducesResponseType(StatusCodes.Status404NotFound)] 
     [ProducesResponseType(StatusCodes.Status409Conflict)] //TODO: а мож не
     public async Task<ActionResult> CancelOrder(int orderId)
     {
-        return Problem("This method has not been yet implemented", statusCode: 501); 
-    }
-    
+        try
+        {
+            await _staffService.CancelOrder(orderId, ClaimsHelper.GetUserId(User)); 
+            return Ok();
+        }
+        catch (BackendException be)
+        {
+            return Problem(be.UserMessage, statusCode: be.StatusCode);
+        }
+        catch   
+        {
+            return Problem("Unknown error", statusCode: 500);
+        }
+    }    
 }
