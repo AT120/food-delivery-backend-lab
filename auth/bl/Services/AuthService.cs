@@ -113,7 +113,15 @@ public class AuthService : IAuthService
 
     public async Task<TokenPair> Register(RegisterCreds creds)
     {
-        var user = new User(creds);
+        var user = new User 
+        {
+            UserName = creds.Email,
+            Email = creds.Email,
+            FullName = creds.Name,
+            PhoneNumber = creds.PhoneNumber,
+            Gender = creds.Gender,
+            BirthDate = creds.BirthDate,
+        };
         var res = await _userManager.CreateAsync(user, creds.Password);
         if (!res.Succeeded)
             throw new BackendException(400, res.Errors.First().Description);

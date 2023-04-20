@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjCommon;
 using ProjCommon.Enums;
 using ProjCommon.Exceptions;
+using DishInCart = BackendDAL.Entities.DishInCart;
 
 namespace BackendBl.Services;
 

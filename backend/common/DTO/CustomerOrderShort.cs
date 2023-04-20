@@ -3,7 +3,7 @@ using BackendCommon.Enums;
 
 namespace BackendCommon.DTO;
 
-public class CustomerOrderShortDTO
+public class CustomerOrderShort
 {
     public int Id { get; set; }
     public DateTime OrderTime { get; set; }

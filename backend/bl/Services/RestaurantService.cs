@@ -17,7 +17,7 @@ public class RestaurantService : IRestaurantService
         _dbcontext = dc;
     }
 
-    public async Task<Page<RestaurantDTO>> GetRestaurants(int page, string? searchQuery)
+    public async Task<Page<Restaurant>> GetRestaurants(int page, string? searchQuery)
     {
         if (page < 1)
             throw new BackendException(400, "Incorrect page number");
@@ -25,7 +25,7 @@ public class RestaurantService : IRestaurantService
             
         var query = 
             _dbcontext.Restaurants
-                .Select(r => new RestaurantDTO 
+                .Select(r => new Restaurant 
                 {
                     Id = r.Id,
                     Name = r.Name,
@@ -42,18 +42,14 @@ public class RestaurantService : IRestaurantService
             throw new BackendException(400, "Incorrect page number");     
         
         var restaurants = await query
+                .OrderBy(x => x.Name)
                 .Skip(rangeStart)
                 .Take(PageSize.Default)
                 .ToListAsync();
         
-        // var t = new RestaurantsPage();
-        // t.Page.RangeStart = 1;
-        return new Page<RestaurantDTO> {
-            PageInfo = new PageInfo {
-                RangeStart = (size == 0) ? 0 : rangeStart + 1,
-                RangeEnd = rangeEnd,
-                Size = size,
-            },
+
+        return new Page<Restaurant> {
+            PageInfo = new PageInfo(rangeStart, rangeEnd, size),
             Items = restaurants
         };
     }

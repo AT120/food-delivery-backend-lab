@@ -59,7 +59,7 @@ public class StaffController : ControllerBase
 
     [HttpGet("in-delivery")]
     [Authorize(Roles = "Courier")] //TODO: константой откуда-нибудь
-    public async Task<ActionResult<ICollection<CourierOrderDTO>>> GetOrders(
+    public async Task<ActionResult<ICollection<CourierOrder>>> GetOrders(
         int? page,
         bool? inDelivery,
         StaffOrderSortingTypes sorting)
@@ -90,9 +90,9 @@ public class StaffController : ControllerBase
 
     [HttpPost("{orderId}/next-status")]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status202Accepted)] //TODO: а мож не
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status404NotFound)] 
-    [ProducesResponseType(StatusCodes.Status409Conflict)] //TODO: а мож не
+    [ProducesResponseType(StatusCodes.Status409Conflict)] 
     public async Task<ActionResult> AssignNextStatus(int orderId)
     {
         try

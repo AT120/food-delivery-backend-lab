@@ -1,6 +1,6 @@
 namespace BackendCommon.DTO;
 
-public class CourierOrderDTO
+public class CourierOrder
 {
     public int Id { get; set; }
     public string Address { get; set; }

@@ -8,7 +8,7 @@ public interface IStaffService
 {
     Task CancelOrder(int orderId, Guid userId);
 
-    Task<Page<StaffOrderDTO>> GetOrders(
+    Task<Page<StaffOrder>> GetOrders(
         int page,
         int orderStatuses,
         int? orderId,
@@ -16,7 +16,7 @@ public interface IStaffService
         ClaimsPrincipal user
     );
     
-    Task<Page<CourierOrderDTO>> GetCourierOrders(
+    Task<Page<CourierOrder>> GetCourierOrders(
         int page,
         bool inDelivery,
         StaffOrderSortingTypes sorting,

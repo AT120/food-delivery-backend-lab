@@ -3,7 +3,6 @@ using AuthBL;
 using AuthBL.Services;
 using AuthCommon.Interfaces;
 using AuthDAL;
-using BackendDAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using ProjCommon;
@@ -40,6 +39,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 builder.Services.AddAuthorization(options =>
 {
+    options.InvokeHandlersAfterFailure = false;
     options.UpdateDefaultPolicy();
     options.AddRefreshOnlyPolicy();
 });

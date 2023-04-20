@@ -18,18 +18,18 @@ public static class Converter
         };
     }
 
-    public static DishInCartDTO GetDishInCartDTO(DishInCart cart)
+    public static BackendCommon.DTO.DishInCart GetDishInCartDTO(BackendDAL.Entities.DishInCart cart)
     {
-        return new DishInCartDTO
+        return new BackendCommon.DTO.DishInCart
         {
             Count = cart.Count,
             Dish = GetShortDish(cart.Dish),
         };
     }
 
-    public static CustomerOrderShortDTO GetCustomerOrderShort(Order order)
+    public static CustomerOrderShort GetCustomerOrderShort(Order order)
     {
-        return new CustomerOrderShortDTO
+        return new CustomerOrderShort
         {
             DeliveryTime = order.DeliveryTime,
             Id = order.Id,
@@ -40,9 +40,9 @@ public static class Converter
     }
 
 
-    public static CustomerDetailedOrderDTO GetCustomerDetailedOrder(Order order)
+    public static CustomerDetailedOrder GetCustomerDetailedOrder(Order order)
     {
-        return new CustomerDetailedOrderDTO
+        return new CustomerDetailedOrder
         {
             Id = order.Id,
             Address = order.Address,

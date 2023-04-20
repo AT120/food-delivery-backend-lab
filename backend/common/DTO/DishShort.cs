@@ -1,6 +1,6 @@
 namespace BackendCommon.DTO;
 
-public class DishShort //TODO: rename
+public class DishShort
 {
     public Guid Id { get; set; }
     public string Name { get; set; }

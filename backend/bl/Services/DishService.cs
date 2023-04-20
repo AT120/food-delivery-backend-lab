@@ -98,6 +98,9 @@ public class DishService : IDishService
         int rangeStart = PageSize.Default * (page - 1);
         int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
 
+        if (rangeStart > size)
+            throw new BackendException(400, "Invalid page number");
+
         var dishes = await query
             .Select(d => Converter.GetShortDish(d))
             .Skip(rangeStart)
@@ -106,12 +109,7 @@ public class DishService : IDishService
 
         return new Page<DishShort>
         {
-            PageInfo = new PageInfo
-            {
-                RangeStart = (size == 0) ? 0 : rangeStart + 1,
-                RangeEnd = rangeEnd,
-                Size = size,
-            },
+            PageInfo = new PageInfo(rangeStart, rangeEnd, size),
             Items = dishes
         };
     }

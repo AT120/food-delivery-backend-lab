@@ -23,7 +23,7 @@ public class OrdersController : ControllerBase
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ICollection<CustomerOrderShortDTO>>> Get(
+    public async Task<ActionResult<ICollection<CustomerOrderShort>>> Get(
         int? page,
         DateTime? startDate,
         DateTime? endDate,          
@@ -61,7 +61,7 @@ public class OrdersController : ControllerBase
     [Authorize] //TODO: role = customer
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<CustomerDetailedOrderDTO>> GetOrder(int orderId)
+    public async Task<ActionResult<CustomerDetailedOrder>> GetOrder(int orderId)
     {
         try
         {
@@ -103,7 +103,7 @@ public class OrdersController : ControllerBase
 
     [HttpPost("{orderId}/repeat")]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status201Created)] //TODO: остутствующие блюда
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> RepeatOrder(int orderId)
@@ -132,7 +132,6 @@ public class OrdersController : ControllerBase
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //TODO: че возвращать если заказ уже на кухне?
     public async Task<ActionResult> CancelOrder(int orderId)
     {
         try

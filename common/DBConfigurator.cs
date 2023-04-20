@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BackendDAL;
+namespace ProjCommon;
 
 public static class BackendDBConfigurator
 {

@@ -5,16 +5,16 @@ namespace BackendCommon.Interfaces;
 
 public interface IOrderService
 {
-    Task<Page<CustomerOrderShortDTO>> GetOrders(
+    Task<Page<CustomerOrderShort>> GetOrders(
         Guid userId,
         int page,
         DateTime? startDate,
         DateTime? endDate,
         int status,
-        int? orderIdQuery //TODO: Sorting
+        int? orderIdQuery
     );
 
-    Task<CustomerDetailedOrderDTO> GetOrder(int orderId, Guid userId);
+    Task<CustomerDetailedOrder> GetOrder(int orderId, Guid userId);
 
     Task<int> CreateOrderFromCart(
         Guid userId,

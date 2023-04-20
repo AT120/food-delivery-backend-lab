@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using BackendCommon;
 using BackendCommon.Const;
 using BackendCommon.DTO;
 using BackendCommon.Enums;
@@ -18,13 +19,13 @@ public class OrderService : IOrderService
 {
     private readonly BackendDBContext _dbcontext;
     private readonly ICartService _cartService;
-    public OrderService(BackendDBContext dc, CartService cs)
+    public OrderService(BackendDBContext dc, ICartService cs)
     {
         _dbcontext = dc;
         _cartService = cs;
     }
 
-    private static string GetArchivedDishesError(IEnumerable<DishInCart> dishes)
+    private static string GetArchivedDishesError(IEnumerable<BackendDAL.Entities.DishInCart> dishes)
     {
         var sb = new StringBuilder();
 
@@ -37,13 +38,13 @@ public class OrderService : IOrderService
         return sb.ToString();
     }
 
-    public async Task<Page<CustomerOrderShortDTO>> GetOrders(
+    public async Task<Page<CustomerOrderShort>> GetOrders(
         Guid userId,
         int page,
         DateTime? startDate,
         DateTime? endDate,
         int status,
-        int? orderIdQuery //TODO: Sorting
+        int? orderIdQuery
     )
     {
         var query = _dbcontext.Orders
@@ -57,20 +58,32 @@ public class OrderService : IOrderService
         if (endDate is not null)
             query = query.Where(o => o.OrderTime <= endDate);
         if (orderIdQuery is not null)
-            query = query.Where(o => o.Id == orderIdQuery); //TODO: Есть ли в этом необходимость?
+            query = query.Where(o => o.Id == orderIdQuery);
 
 
         int size = await query.CountAsync();
         int rangeStart = PageSize.Default * (page - 1);
         int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
 
+        if (rangeStart > size)
+            throw new BackendException(400, "Invalid page number");
+
         var orders = await query
-            .Select(o => Converter.GetCustomerOrderShort(o))
+            .Select(order =>
+            new CustomerOrderShort
+            {
+                DeliveryTime = order.DeliveryTime,
+                Id = order.Id,
+                OrderTime = order.OrderTime,
+                Price = order.FinalPrice,
+                Status = order.Status
+            })
+            .OrderBy(o => o.OrderTime)
             .Skip(rangeStart)
             .Take(PageSize.Default)
             .ToListAsync();
 
-        return new Page<CustomerOrderShortDTO>
+        return new Page<CustomerOrderShort>
         {
             PageInfo = new PageInfo(rangeStart, rangeEnd, size),
             Items = orders
@@ -78,16 +91,16 @@ public class OrderService : IOrderService
     }
 
 
-    public async Task<CustomerDetailedOrderDTO> GetOrder(int orderId, Guid userId)
+    public async Task<CustomerDetailedOrder> GetOrder(int orderId, Guid userId)
     {
         Order order = await _dbcontext.Orders
             .Include(o => o.Dishes)
             .ThenInclude(d => d.Dish)
-            .FirstOrDefaultAsync(o => 
+            .FirstOrDefaultAsync(o =>
                 o.Id == orderId &&
                 o.CustomerId == userId
             ) ?? throw new BackendException(404, "This customer has no order with specified id");
-        
+
         return Converter.GetCustomerDetailedOrder(order);
     }
 
@@ -142,7 +155,7 @@ public class OrderService : IOrderService
                 OrderId = order.Id,
             });
         }
-        
+
         await _cartService.CleanCart(userId);
         await _dbcontext.SaveChangesAsync();
 
@@ -151,28 +164,30 @@ public class OrderService : IOrderService
 
 
     public async Task RepeatOrder(int orderId, Guid userId)
-    {        
+    {
         var prevOrder = await _dbcontext.Orders
             .Where(o => o.Id == orderId && o.CustomerId == userId)
             .Include(o => o.Dishes)
             .ThenInclude(d => d.Dish)
             .FirstOrDefaultAsync();
-        
+
         if (prevOrder is null)
             throw new BackendException(404, "User does not have orders with requested id");
-        
+
         foreach (var dish in prevOrder.Dishes)
         {
             if (dish.Dish.Archived)
                 continue;
-            
-            await _dbcontext.DishesInCart.AddAsync(new DishInCart
+
+            await _dbcontext.DishesInCart.AddAsync(new BackendDAL.Entities.DishInCart
             {
                 Count = dish.Count,
                 CustomerId = userId,
                 DishId = dish.DishId
             });
         }
+
+        await _dbcontext.SaveChangesAsync();
     }
 
 
@@ -181,15 +196,17 @@ public class OrderService : IOrderService
         var order = await _dbcontext.Orders
             .Where(o => o.Id == orderId && o.CustomerId == userId)
             .FirstOrDefaultAsync();
-        
+
         if (order is null)
             throw new BackendException(404, "User does not have orders with requested id");
-        
+
         if (order.Status != OrderStatus.Created)
             throw new BackendException(400, "Your order is already being processed. You can't cancel it.");
-        
+
         //TODO: race condition
         order.Status = OrderStatus.Canceled;
+
+        await _dbcontext.SaveChangesAsync();
         return;
     }
 }

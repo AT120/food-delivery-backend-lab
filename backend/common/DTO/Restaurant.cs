@@ -1,6 +1,6 @@
 namespace BackendCommon.DTO;
 
-public class RestaurantDTO
+public class Restaurant
 {
     public Guid Id { get; set; }
     public string Name { get; set; }

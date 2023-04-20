@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace ProjCommon;
 
@@ -69,6 +70,7 @@ public static class TokenConfiguration
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = Key
+
                 };
 
                 if (events is not null)

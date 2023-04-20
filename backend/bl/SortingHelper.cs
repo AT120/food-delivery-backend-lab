@@ -9,12 +9,16 @@ namespace BackendBl;
 
 public static class SortingHelper
 {    
-    public static readonly Dictionary
+    public static readonly IReadOnlyDictionary
     <
         SortingTypes,
         Func<IQueryable<Dish>, IOrderedQueryable<Dish>>
     > 
-    DishSortingFuncs = new()
+    DishSortingFuncs = new Dictionary
+    <
+        SortingTypes,
+        Func<IQueryable<Dish>, IOrderedQueryable<Dish>>
+    >()
     {
         {SortingTypes.NameAsc, x => x.OrderBy(y => y.Name)},
         {SortingTypes.NameDesc, x => x.OrderByDescending(y => y.Name)},
@@ -24,12 +28,18 @@ public static class SortingHelper
         {SortingTypes.RatingDesc, x => x.OrderByDescending(y => y.Rating)},
     };
 
-    public static readonly Dictionary
+
+
+    public static readonly IReadOnlyDictionary
     <
         StaffOrderSortingTypes,
         Func<IQueryable<Order>, IOrderedQueryable<Order>>
     > 
-    StaffSortingFuncs = new()
+    StaffSortingFuncs = new Dictionary
+    <
+        StaffOrderSortingTypes,
+        Func<IQueryable<Order>, IOrderedQueryable<Order>>
+    >()
     {
         {StaffOrderSortingTypes.CreationTimeAsc, x => x.OrderBy(y => y.OrderTime)},
         {StaffOrderSortingTypes.CreationTimeDesc, x => x.OrderByDescending(y => y.OrderTime)},

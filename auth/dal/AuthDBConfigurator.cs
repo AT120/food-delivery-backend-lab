@@ -1,10 +1,10 @@
 using AuthDAL.Models;
-using BackendDAL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ProjCommon;
 
 namespace AuthDAL;
 public static class AuthConfigurator

@@ -24,7 +24,7 @@ public class RestaurantController : ControllerBase
     [ProducesResponseType(StatusCodes.Status206PartialContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ICollection<RestaurantDTO>>> GetRestaurants(int? pageNum, string? nameQuery)
+    public async Task<ActionResult<ICollection<Restaurant>>> GetRestaurants(int? pageNum, string? nameQuery)
     {
         try
         {
