@@ -22,16 +22,21 @@ public class AuthController : ControllerBase
         _authService = auth;
     }
 
+    /// <summary>
+    /// Регистрация
+    /// </summary>
     [HttpPost("register")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<TokenPair>> Register(RegisterCreds creds)
     {
         try
         {
-            return await _authService.Register(creds);
+            return Created("/api/auth/profile", await _authService.Register(creds));
         }
         catch (BackendException be)
         {
-            return Problem(be.UserMessage, statusCode: be.StatusCode ?? 500);
+            return Problem(be.UserMessage, statusCode: be.StatusCode);
         }
         catch
         {
@@ -39,7 +44,12 @@ public class AuthController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Вход
+    /// </summary>
     [HttpPost("login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<TokenPair>> Login(LoginCreds creds)
     {
         try
@@ -57,8 +67,16 @@ public class AuthController : ControllerBase
     }
 
 
+
+    /// <summary>
+    /// Выход
+    /// </summary>
+    /// <remarks>В авторизации требуется Refresh-токен</remarks>
+    /// <param name="AllUserTokens">Удалить ли все токены пользователя (false по умолчанию)</param>
     [HttpPost("logout")]
     [Authorize(Policies.RefreshOnly)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Logout(bool AllUserTokens)
     {
         try
@@ -79,8 +97,14 @@ public class AuthController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Обновить токен
+    /// </summary>
+    /// <remarks>В авторизации требуется Refresh-токен</remarks>
     [HttpPost("refresh")]
     [Authorize(Policies.RefreshOnly)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<TokenPair>> Refresh()
     {
         try
@@ -91,10 +115,19 @@ public class AuthController : ControllerBase
         {
             return Problem(be.UserMessage, statusCode: be.StatusCode);
         }
+        catch
+        {
+            return Problem("Unknown error", statusCode: 500);
+        }
     } 
 
+    /// <summary>
+    /// Сменить пароль
+    /// </summary>
     [Authorize]
     [HttpPost("change-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> ChangePassword(PasswordPair passwords)
     {
         try

@@ -17,8 +17,13 @@ public class ProfileController : ControllerBase
         _profileService = ps;
     }
 
+    /// <summary>
+    /// Получить свой профиль
+    /// </summary>
     [Authorize]
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserProfile>> GetUserProfile()
     {
         try
@@ -35,8 +40,14 @@ public class ProfileController : ControllerBase
         }
     }
 
+
+    /// <summary>
+    /// Отредактировать свой профиль
+    /// </summary>
     [Authorize]
     [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> UpdateUserProfile(UserProfileEdit profile)
     {
         try
