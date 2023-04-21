@@ -15,6 +15,6 @@ public interface IDishService
         SortingTypes sorting
     );
     
-    Task<DishDetailed> GetDish(Guid dishId, Guid userId);
+    Task<DishDetailed> GetDish(Guid dishId, Guid? userId);
     Task RateDish(Guid dishId, int newRating, Guid userId);
 }

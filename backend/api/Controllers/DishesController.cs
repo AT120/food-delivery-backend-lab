@@ -20,9 +20,14 @@ public class DishesController : ControllerBase
         _dishService = ds;
     }
     
-
+    /// <summary>
+    /// Получить блюда в заданном ресторане
+    /// </summary>
+    /// <response code="200">В ответе вернулись все блюда</response>
+    /// <response code="206">В ответе вернулась часть блюд</response>
     [HttpGet("/api/restaurants/{restaurantId}/dishes")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status206PartialContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ICollection<DishShort>>> GetDishes(
@@ -58,7 +63,14 @@ public class DishesController : ControllerBase
         }
     } 
 
-
+    /// <summary>
+    /// Получить подробную информацию о блюде
+    /// </summary>
+    /// <remarks>
+    /// Если при запросе пользователь будет авторизован, то в ответе будут дополнительно отправлены:
+    /// - возможность оставить оценку этому блюду у пользователя (canBeRated)
+    /// - предыдущая оценка, оставленная эти пользователем (previousRating)
+    /// </remarks>
     [HttpGet("{dishId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -67,7 +79,7 @@ public class DishesController : ControllerBase
     {   
         try
         {
-            return await _dishService.GetDish(dishId, ClaimsHelper.GetUserId(User));
+            return await _dishService.GetDish(dishId, ClaimsHelper.TryGetUserId(User));
         }
         catch (BackendException be)
         {
@@ -79,6 +91,9 @@ public class DishesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Поставить блюду оценку
+    /// </summary>
     [HttpPut("{dishId}/rating")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]

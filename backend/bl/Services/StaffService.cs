@@ -137,7 +137,7 @@ public class StaffService: IStaffService
         int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
         
         if (rangeStart > size)
-            throw new BackendException(400, "Incorrect page number");     
+            throw new BackendException(400, "Invalid page number");     
         
         var orders = await query
             .Select(o => new CourierOrder

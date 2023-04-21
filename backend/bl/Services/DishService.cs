@@ -115,13 +115,14 @@ public class DishService : IDishService
     }
 
 
-    public async Task<DishDetailed> GetDish(Guid dishId, Guid userId)
+    public async Task<DishDetailed> GetDish(Guid dishId, Guid? userId)
     {
         var dish = await _dbcontext.Dishes.FindAsync(dishId)
             ?? throw new BackendException(404, "Requested dish does not exist.");
 
-        var rating = await _dbcontext.RatedDishes
-            .FindAsync(new { userId, dishId });
+        RatedDish? rating = null;
+        if (userId is not null)
+            rating = await _dbcontext.RatedDishes.FindAsync(userId, dishId);
 
         bool userCanRate = rating is not null;
         int? previousRating = rating?.Rating;
@@ -152,7 +153,7 @@ public class DishService : IDishService
         var dish = await _dbcontext.Dishes.FindAsync(dishId)
             ?? throw new BackendException(404, "Requested dish does not exist.");
 
-        var ratedDish = await _dbcontext.RatedDishes.FindAsync(new { userId, dishId })
+        var ratedDish = await _dbcontext.RatedDishes.FindAsync(userId, dishId)
             ?? throw new BackendException(
                 403,
                 "You can not rate this dish",

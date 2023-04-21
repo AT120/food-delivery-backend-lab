@@ -20,7 +20,7 @@ public class CartService : ICartService
         _dbcontext = dc;
     }
 
-    public async Task<CartDTO> GetCart(Guid userId)
+    public async Task<Cart> GetCart(Guid userId)
     {
         var dishes = await _dbcontext.DishesInCart
             .Where(d => d.CustomerId == userId)
@@ -32,7 +32,7 @@ public class CartService : ICartService
         foreach (var dish in dishes)
             total += dish.Count * dish.Dish.Price;
 
-        return new CartDTO
+        return new Cart
         {
             Dishes = dishes,
             FinalPrice = total,
@@ -46,6 +46,8 @@ public class CartService : ICartService
             ?? throw new BackendException(404, "Requested dish does not exist.");
         if (dish.Archived)
             throw new BackendException(400, "This dish is archived and can not be added into the cart.");
+        if (dishModel.Count == 0)
+            return;
 
 
         await _dbcontext.DishesInCart.AddAsync(new DishInCart
@@ -61,10 +63,13 @@ public class CartService : ICartService
 
     public async Task ChangeDishQunatity(Guid dishId, int count, Guid userId)
     {
-        DishInCart dishInCart = await _dbcontext.DishesInCart.FindAsync(new { userId, dishId })
+        DishInCart dishInCart = await _dbcontext.DishesInCart.FindAsync(userId, dishId)
             ?? throw new BackendException(404, "Requested dish is absent in user's cart.");
+        if (count == 0)
+            _dbcontext.DishesInCart.Remove(dishInCart);
+        else
+            dishInCart.Count = count;
 
-        dishInCart.Count = count;
         await _dbcontext.SaveChangesAsync();
     }
 

@@ -18,10 +18,12 @@ public class CartController : ControllerBase
         _cartService = cs;
     }
 
-
+    /// <summary>
+    /// Получить корзину
+    /// </summary>
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<CartDTO>> GetCart()
+    public async Task<ActionResult<Cart>> GetCart()
     {
         try
         {
@@ -38,9 +40,13 @@ public class CartController : ControllerBase
     }
 
 
+    /// <summary>
+    /// Добавить блюдо в корзину
+    /// </summary>
+    /// <response code="404">Блюда с заданным id не существует</response>
     [HttpPost("dishes")]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> PutDishToCart(DishCount dishCount)
@@ -48,7 +54,7 @@ public class CartController : ControllerBase
         try
         {
             await _cartService.PutDishIntoCart(dishCount, ClaimsHelper.GetUserId(User));
-            return Ok();
+            return Created("/api/cart", null);
         }
         catch (BackendException be)
         {
@@ -60,7 +66,10 @@ public class CartController : ControllerBase
         } 
     }
 
-
+    /// <summary>
+    /// Изменить количество блюда в корзине
+    /// </summary>
+    /// <response code="404">Заданного блюда нет в корзине</response>
     [HttpPut("dishes/{dishId}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -83,17 +92,19 @@ public class CartController : ControllerBase
         }  
     }
 
-
+    /// <summary>
+    /// Удалить блюдо из корзины
+    /// </summary>
     [HttpDelete("dishes/{dishId}")]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> DeleteDish(Guid dishId)
     {
         try
         {
             await _cartService.DeleteDishFromCart(dishId, ClaimsHelper.GetUserId(User));
-            return Ok();
+            return NoContent();
         }
         catch (BackendException be)
         {
@@ -105,17 +116,19 @@ public class CartController : ControllerBase
         } 
     }
 
-
+    /// <summary>
+    /// Очистить корзину
+    /// </summary>
     [HttpDelete("dishes")]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> CleanCart()
     {
         try
         {
             await _cartService.CleanCart(ClaimsHelper.GetUserId(User));
-            return Ok();
+            return NoContent();
         }
         catch (BackendException be)
         {

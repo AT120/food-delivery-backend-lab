@@ -24,12 +24,18 @@ public class StaffController : ControllerBase
     }
 
     
+    /// <summary>
+    /// Получить заказы (повар и менеджер)
+    /// </summary>
+    /// <param name="status">Сумма статусов OrderStatus, по которым будет производиться фильтрация</param>
     [HttpGet()]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status206PartialContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetOrders(
         int? page,
-        int status, //TODO: дописать в сваггере как работает несколько статусов.
+        int status,
         int? orderId,
         StaffOrderSortingTypes sorting) 
     {
@@ -57,8 +63,15 @@ public class StaffController : ControllerBase
         } 
     }
 
+    /// <summary>
+    /// Получить заказы (курьер)
+    /// </summary>
+    /// <param name="inDelivery">Если true, то в результате будут заказы, которые уже взяты запрашиваемым курьером</param>
     [HttpGet("in-delivery")]
     [Authorize(Roles = "Courier")] //TODO: константой откуда-нибудь
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status206PartialContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ICollection<CourierOrder>>> GetOrders(
         int? page,
         bool? inDelivery,
@@ -88,11 +101,14 @@ public class StaffController : ControllerBase
     }
 
 
+    /// <summary>
+    /// Взять заказ, или выставить ему следующий статус (повар и курьер)
+    /// </summary>
     [HttpPost("{orderId}/next-status")]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)] 
     [ProducesResponseType(StatusCodes.Status404NotFound)] 
-    [ProducesResponseType(StatusCodes.Status409Conflict)] 
     public async Task<ActionResult> AssignNextStatus(int orderId)
     {
         try
@@ -110,17 +126,20 @@ public class StaffController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Отменить заказ (курьер)
+    /// </summary>
     [HttpDelete("{orderId}")]
     [Authorize] //TODO: role courier
     [ProducesResponseType(StatusCodes.Status204NoContent)] 
+    [ProducesResponseType(StatusCodes.Status400BadRequest)] 
     [ProducesResponseType(StatusCodes.Status404NotFound)] 
-    [ProducesResponseType(StatusCodes.Status409Conflict)] //TODO: а мож не
     public async Task<ActionResult> CancelOrder(int orderId)
     {
         try
         {
             await _staffService.CancelOrder(orderId, ClaimsHelper.GetUserId(User)); 
-            return Ok();
+            return NoContent();
         }
         catch (BackendException be)
         {

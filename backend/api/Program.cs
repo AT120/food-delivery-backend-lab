@@ -35,8 +35,8 @@ builder.Services.AddSwaggerGen( c =>
     });
     c.OperationFilter<AuthFilter>();
     c.SchemaFilter<EnumSchemaFilter>();
-    // c.UseInlineDefinitionsForEnums();
-    // c.UseOneOfForPolymorphism();
+    var filePath = Path.Combine(System.AppContext.BaseDirectory, "BackendApi.xml");
+    c.IncludeXmlComments(filePath);
 });
 
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();

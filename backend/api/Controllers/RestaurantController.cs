@@ -19,6 +19,12 @@ public class RestaurantController : ControllerBase
         _restaurantService = rs;
     }
 
+
+    /// <summary>
+    /// Получить рестораны
+    /// </summary>
+    /// <response code="200">В ответе вернулись все рестораны</response>
+    /// <response code="206">В ответе вернулась часть ресторанов</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status206PartialContent)]
@@ -44,7 +50,9 @@ public class RestaurantController : ControllerBase
         }
     }
 
-
+    /// <summary>
+    /// Получить все меню указанного ресторана
+    /// </summary>
     [HttpGet("{restaurantId}/menus")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

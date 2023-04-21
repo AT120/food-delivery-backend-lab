@@ -9,6 +9,7 @@ using BackendDAL;
 using BackendDAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic;
 using ProjCommon;
 using ProjCommon.Enums;
 using ProjCommon.Exceptions;
@@ -120,7 +121,7 @@ public class OrderService : IOrderService
             throw new BackendException(400, "Can't place the order, your cart is empty.");
 
         var archivedDishes = dishesToOrder.Where(d => d.Dish.Archived);
-        if (archivedDishes.IsNullOrEmpty())
+        if (!archivedDishes.IsNullOrEmpty())
             throw new BackendException(400, GetArchivedDishesError(archivedDishes));
 
         // Из одного ресторана
@@ -145,6 +146,7 @@ public class OrderService : IOrderService
         };
 
         await _dbcontext.Orders.AddAsync(order); //TODO: будет ли здесь id
+        await _dbcontext.SaveChangesAsync();
 
         foreach (var dish in dishesToOrder)
         {
@@ -173,18 +175,30 @@ public class OrderService : IOrderService
 
         if (prevOrder is null)
             throw new BackendException(404, "User does not have orders with requested id");
+        var cart = await _dbcontext.DishesInCart
+            .Where(d => d.CustomerId == userId)
+            .ToListAsync();
 
         foreach (var dish in prevOrder.Dishes)
         {
             if (dish.Dish.Archived)
                 continue;
 
-            await _dbcontext.DishesInCart.AddAsync(new BackendDAL.Entities.DishInCart
+            var sameDishInCart = cart.FirstOrDefault(d => d.DishId == dish.DishId);
+
+            if (sameDishInCart is not null)
             {
-                Count = dish.Count,
-                CustomerId = userId,
-                DishId = dish.DishId
-            });
+                sameDishInCart.Count = dish.Count;
+            }
+            else
+            {
+                await _dbcontext.DishesInCart.AddAsync(new BackendDAL.Entities.DishInCart
+                {
+                    Count = dish.Count,
+                    CustomerId = userId,
+                    DishId = dish.DishId
+                });
+            }
         }
 
         await _dbcontext.SaveChangesAsync();

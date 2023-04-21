@@ -1,6 +1,6 @@
 namespace BackendCommon.DTO;
 
-public class CartDTO
+public class Cart
 {
     public ICollection<DishInCart> Dishes { get; set; }
     public int FinalPrice { get; set; }

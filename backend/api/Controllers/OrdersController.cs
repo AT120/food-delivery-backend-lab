@@ -19,17 +19,23 @@ public class OrdersController : ControllerBase
         _orderService = os;
     }
 
+    /// <summary>
+    /// Получить заказы
+    /// </summary>
+    /// <param name="status">Сумма статусов OrderStatus, по которым будет производиться фильтрация</param>
+    /// <response code="200">В ответе вернулись все заказы</response>
+    /// <response code="206">В ответе вернулась часть заказов</response>
     [HttpGet]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status206PartialContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ICollection<CustomerOrderShort>>> Get(
+    public async Task<ActionResult<ICollection<CustomerOrderShort>>> GetOrders(
         int? page,
         DateTime? startDate,
         DateTime? endDate,          
-        int status, //TODO: прописать в доку, что тут типо из OrderStatus
+        int status,
         int? orderIdQuery)
-        //TODO: EnumSchemaFilter https://avarnon.medium.com/how-to-show-enums-as-strings-in-swashbuckle-aspnetcore-628d0cc271e6
     {
         try
         {
@@ -56,11 +62,14 @@ public class OrdersController : ControllerBase
         }
     }
 
-
+    /// <summary>
+    /// Получить подробную информацию о заказе
+    /// </summary>
     [HttpGet("{orderId}")]
     [Authorize] //TODO: role = customer
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CustomerDetailedOrder>> GetOrder(int orderId)
     {
         try
@@ -77,19 +86,23 @@ public class OrdersController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Создать заказ из корзины
+    /// </summary>
     [HttpPost]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<int>> CreateOrder(OrderInfo orderInfo) //TODO: OrderId или int?
+    public async Task<ActionResult> CreateOrder(OrderInfo orderInfo)
     {
         try
         {
-            return await _orderService.CreateOrderFromCart(
+            int orderId = await _orderService.CreateOrderFromCart(
                 ClaimsHelper.GetUserId(User),
                 orderInfo.Address,
                 orderInfo.DeliveryTime
             );
+            return Created($"/api/orders/{orderId}", null);
         }
         catch (BackendException be)
         {
@@ -101,6 +114,11 @@ public class OrdersController : ControllerBase
         }
     }
 
+
+    /// <summary>
+    /// Повторить заказ
+    /// </summary>
+    /// <remarks>Доступные блюда из указанного заказа будут добавлены в корзину</remarks>
     [HttpPost("{orderId}/repeat")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -115,7 +133,7 @@ public class OrdersController : ControllerBase
                 ClaimsHelper.GetUserId(User)
             );
 
-            return Created("/api/cart", "test"); //TODO: убрать тест
+            return Created("/api/cart", null);
         }
         catch (BackendException be)
         {
@@ -128,10 +146,14 @@ public class OrdersController : ControllerBase
     }
 
 
+    /// <summary>
+    /// Отменить заказ
+    /// </summary>
     [HttpDelete("{orderId}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> CancelOrder(int orderId)
     {
         try

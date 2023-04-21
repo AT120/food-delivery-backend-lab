@@ -17,16 +17,13 @@ public class AuthService : IAuthService
 {
     private readonly UserManager<User> _userManager;
     private readonly AuthDBContext _dbcontext;
-    private readonly RoleManager<Role> _roleManager;
 
     public AuthService(
         UserManager<User> um,
-        AuthDBContext dbc,
-        RoleManager<Role> rm)
+        AuthDBContext dbc)
     {
         _userManager = um;
         _dbcontext = dbc;
-        _roleManager = rm;
     }
 
 

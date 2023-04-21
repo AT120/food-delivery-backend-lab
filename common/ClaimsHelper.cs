@@ -36,4 +36,16 @@ public static class ClaimsHelper
 
     public static Guid GetUserId(ClaimsPrincipal user) =>
         GetValue<Guid>(ClaimType.UserId, user);
+    
+    public static Guid? TryGetUserId(ClaimsPrincipal user)
+    {
+        string? value = user.FindFirstValue(ClaimType.UserId);
+        if (value is null)
+            return null;
+
+        if (!Guid.TryParse(value, out Guid userId))
+            return null;
+        
+        return userId;
+    }
 }

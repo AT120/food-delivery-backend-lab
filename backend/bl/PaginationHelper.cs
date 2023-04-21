@@ -11,6 +11,8 @@ public static class PaginationHelper
 
     public static int GetStatusCode(PageInfo page)
     {
-        return ((page.RangeEnd - page.RangeStart) < page.Size) ? 206 : 200;
+        if (page.RangeStart == 1 && page.RangeEnd == page.Size)
+            return 200;
+        return 206;
     }
 }
