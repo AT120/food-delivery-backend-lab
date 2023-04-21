@@ -5,8 +5,10 @@ using AuthCommon.Interfaces;
 using AuthDAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi.Models;
 using ProjCommon;
 using ProjCommon.Enums;
+using ProjCommon.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c=>
 {
+    c.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme 
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT for authoriztion" 
+    });
+    c.OperationFilter<AuthFilter>();
+    c.SchemaFilter<EnumSchemaFilter>();
     var filePath = Path.Combine(System.AppContext.BaseDirectory, "AuthApi.xml");
     c.IncludeXmlComments(filePath);
 });

@@ -42,6 +42,8 @@ public class CartService : ICartService
 
     public async Task PutDishIntoCart(DishCount dishModel, Guid userId)
     {
+        if (dishModel.Count < 0)
+            throw new BackendException(400, "Dish count have to be greter then 0");
         var dish = await _dbcontext.Dishes.FindAsync(dishModel.Id)
             ?? throw new BackendException(404, "Requested dish does not exist.");
         if (dish.Archived)
@@ -65,6 +67,9 @@ public class CartService : ICartService
     {
         DishInCart dishInCart = await _dbcontext.DishesInCart.FindAsync(userId, dishId)
             ?? throw new BackendException(404, "Requested dish is absent in user's cart.");
+        if (count < 0)
+            throw new BackendException(400, "Dish count have to be greter then 0");
+
         if (count == 0)
             _dbcontext.DishesInCart.Remove(dishInCart);
         else

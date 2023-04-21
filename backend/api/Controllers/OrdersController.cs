@@ -26,7 +26,7 @@ public class OrdersController : ControllerBase
     /// <response code="200">В ответе вернулись все заказы</response>
     /// <response code="206">В ответе вернулась часть заказов</response>
     [HttpGet]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status206PartialContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,7 +66,7 @@ public class OrdersController : ControllerBase
     /// Получить подробную информацию о заказе
     /// </summary>
     [HttpGet("{orderId}")]
-    [Authorize] //TODO: role = customer
+    [Authorize(Roles = "Customer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -90,7 +90,7 @@ public class OrdersController : ControllerBase
     /// Создать заказ из корзины
     /// </summary>
     [HttpPost]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> CreateOrder(OrderInfo orderInfo)
@@ -120,7 +120,7 @@ public class OrdersController : ControllerBase
     /// </summary>
     /// <remarks>Доступные блюда из указанного заказа будут добавлены в корзину</remarks>
     [HttpPost("{orderId}/repeat")]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -150,7 +150,7 @@ public class OrdersController : ControllerBase
     /// Отменить заказ
     /// </summary>
     [HttpDelete("{orderId}")]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

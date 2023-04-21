@@ -59,7 +59,7 @@ public class OrderService : IOrderService
         if (endDate is not null)
             query = query.Where(o => o.OrderTime <= endDate);
         if (orderIdQuery is not null)
-            query = query.Where(o => o.Id == orderIdQuery);
+            query = query.Where(o => o.Id.ToString().Contains(orderIdQuery.ToString()));
 
 
         int size = await query.CountAsync();
@@ -112,6 +112,9 @@ public class OrderService : IOrderService
         DateTime deliveryTime
     )
     {
+        if (deliveryTime - DateTime.UtcNow < Delivery.MinDeliveryTimeDiff)
+            throw new BackendException(400, "We can't delivery order faster the 2 hours");
+
         var dishesToOrder = await _dbcontext.DishesInCart
             .Where(d => d.CustomerId == userId)
             .Include(d => d.Dish)

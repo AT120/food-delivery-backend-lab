@@ -22,7 +22,7 @@ public class CartController : ControllerBase
     /// Получить корзину
     /// </summary>
     [HttpGet]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     public async Task<ActionResult<Cart>> GetCart()
     {
         try
@@ -45,7 +45,7 @@ public class CartController : ControllerBase
     /// </summary>
     /// <response code="404">Блюда с заданным id не существует</response>
     [HttpPost("dishes")]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,7 +71,7 @@ public class CartController : ControllerBase
     /// </summary>
     /// <response code="404">Заданного блюда нет в корзине</response>
     [HttpPut("dishes/{dishId}")]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -96,7 +96,7 @@ public class CartController : ControllerBase
     /// Удалить блюдо из корзины
     /// </summary>
     [HttpDelete("dishes/{dishId}")]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> DeleteDish(Guid dishId)
@@ -120,7 +120,7 @@ public class CartController : ControllerBase
     /// Очистить корзину
     /// </summary>
     [HttpDelete("dishes")]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> CleanCart()

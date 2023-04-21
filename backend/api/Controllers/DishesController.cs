@@ -95,7 +95,7 @@ public class DishesController : ControllerBase
     /// Поставить блюду оценку
     /// </summary>
     [HttpPut("{dishId}/rating")]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

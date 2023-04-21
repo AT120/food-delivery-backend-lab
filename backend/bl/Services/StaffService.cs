@@ -1,3 +1,4 @@
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using BackendCommon.Const;
@@ -36,6 +37,34 @@ public class StaffService: IStaffService
         return (OrderStatus)((int)status << 1);
     }
 
+    private async Task AddAbilityToRate(Guid customerId, int orderId)
+    {
+        var order = await _dbcontext.Orders
+            .Include(o => o.Dishes)
+            .FirstOrDefaultAsync(o => o.Id == orderId)
+                ?? throw new ArgumentException("There is no such order");
+
+        foreach (var dish in order.Dishes)
+        {
+            bool alreadyCanRate = await _dbcontext.RatedDishes
+                .AnyAsync(x => 
+                    x.DishId == dish.DishId &&
+                    x.CustomerId == customerId
+                );
+
+            if (alreadyCanRate)
+                continue;
+
+            await _dbcontext.RatedDishes.AddAsync(new RatedDish
+            {
+                DishId = dish.DishId,
+                CustomerId = customerId,
+                Rating = null
+            });
+        }
+
+        await _dbcontext.SaveChangesAsync();
+    }
 
     private async Task NextStatusCook(Order order, Guid userId)
     {
@@ -48,7 +77,7 @@ public class StaffService: IStaffService
         if ((int)order.Status >= (int)OrderStatus.AwaitsCourier)
             throw UnauthorizedChangeStatus;  // заказ отдан курьеру или отменен
 
-        if (order.CookId != userId)
+        if (order.CookId is not null && order.CookId != userId)
             throw UnauthorizedChangeStatus;  // другой повар уже работает над этим заказом
 
         order.CookId ??= userId;  // TODO: Тут может быть дефолт, и ничего не сработает
@@ -66,11 +95,14 @@ public class StaffService: IStaffService
         if (order.Status != OrderStatus.AwaitsCourier && order.Status != OrderStatus.Delivery)
             throw UnauthorizedChangeStatus;
 
-        if (order.CourierId != userId)
+        if (order.CourierId is not null && order.CourierId != userId)
             throw UnauthorizedChangeStatus;
 
         order.CourierId ??= userId;
         order.Status = GetNextOrderStatus(order.Status);
+
+        if (order.Status == OrderStatus.Delivered)
+            await AddAbilityToRate(order.CustomerId, order.Id);
 
         await _dbcontext.SaveChangesAsync();
     }
@@ -80,8 +112,8 @@ public class StaffService: IStaffService
     {
         Guid userId = ClaimsHelper.GetUserId(user);
         var userRoles = user.FindAll(x => x.Type == ClaimType.Role);
-        var isCook = userRoles.Any(x => x.Value == RoleType.Cook.ToString());
-        var isCourier = userRoles.Any(x => x.Value == RoleType.Courier.ToString());
+        var isCook = user.IsInRole(RoleType.Cook.ToString());
+        var isCourier = user.IsInRole(RoleType.Courier.ToString());
 
         
         // try 
@@ -181,7 +213,7 @@ public class StaffService: IStaffService
             );
 
         if (orderId is not null)
-            query = query.Where(x => x.ToString().Contains(orderId.ToString()));
+            query = query.Where(x => x.Id.ToString().Contains(orderId.ToString()));
 
         query = SortingHelper.StaffSortingFuncs[sorting](query);
 
@@ -231,7 +263,7 @@ public class StaffService: IStaffService
             );
         
         if (orderId is not null)
-            query = query.Where(x => x.ToString().Contains(orderId.ToString()));
+            query = query.Where(x => x.Id.ToString().Contains(orderId.ToString())); 
 
         query = SortingHelper.StaffSortingFuncs[sorting](query);
 

@@ -29,7 +29,7 @@ public class StaffController : ControllerBase
     /// </summary>
     /// <param name="status">Сумма статусов OrderStatus, по которым будет производиться фильтрация</param>
     [HttpGet()]
-    [Authorize]
+    [Authorize(Roles = "Cook, Manager")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status206PartialContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -105,7 +105,7 @@ public class StaffController : ControllerBase
     /// Взять заказ, или выставить ему следующий статус (повар и курьер)
     /// </summary>
     [HttpPost("{orderId}/next-status")]
-    [Authorize]
+    [Authorize(Roles = "Courier, Cook")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)] 
     [ProducesResponseType(StatusCodes.Status404NotFound)] 
@@ -130,7 +130,7 @@ public class StaffController : ControllerBase
     /// Отменить заказ (курьер)
     /// </summary>
     [HttpDelete("{orderId}")]
-    [Authorize] //TODO: role courier
+    [Authorize(Roles = "Courier")]
     [ProducesResponseType(StatusCodes.Status204NoContent)] 
     [ProducesResponseType(StatusCodes.Status400BadRequest)] 
     [ProducesResponseType(StatusCodes.Status404NotFound)] 
