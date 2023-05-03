@@ -1,6 +1,6 @@
-using System.Security.Claims;
 using BackendCommon.DTO;
 using BackendCommon.Enums;
+using ProjCommon.DTO;
 
 namespace BackendCommon.Interfaces;
 

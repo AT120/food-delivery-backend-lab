@@ -5,13 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ProjCommon;
 
-public static class BackendDBConfigurator
+public static class DBConfigurator
 {
-    public static void AddDB<T>(this WebApplicationBuilder builder) where T : DbContext
+    public static void AddDB<T>(this WebApplicationBuilder builder, string? connectionString = null) where T : DbContext
     {
         builder.Services.AddDbContext<T>(options =>
         {
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+            options.UseNpgsql(builder.Configuration.GetConnectionString(connectionString ?? "DefaultConnection"));
         });
     }
 

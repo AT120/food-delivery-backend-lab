@@ -1,11 +1,11 @@
 using BackendBl;
 using BackendBl.Services;
 using BackendCommon.Interfaces;
-using BackendDAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using ProjCommon;
 using ProjCommon.Filters;
 using Microsoft.OpenApi.Models;
+using ProjCommon.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.AddDB<BackendDBContext>();
+builder.AddBackendDB();
 
 builder.ConfigureToken();
 builder.Services.AddJwtAuthentication(new JwtBearerEvents
@@ -51,7 +51,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.MigrateDBWhenNecessary<BackendDBContext>();
+    app.MigrateBackendDB();
 }
 
 app.UseHttpsRedirection();

@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\dal\BackendDAL.csproj" />
     <ProjectReference Include="..\bl\BackendBl.csproj" />
     <ProjectReference Include="..\common\BackendCommon.csproj" />
     <ProjectReference Include="..\..\common\ProjCommon.csproj" />

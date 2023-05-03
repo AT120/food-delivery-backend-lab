@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjCommon;
+using ProjCommon.DTO;
 using ProjCommon.Enums;
 using ProjCommon.Exceptions;
 

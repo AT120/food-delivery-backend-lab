@@ -1,0 +1,46 @@
+@section Header {
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg position-fixed w-100" style="z-index: 2;">
+        <a class="navbar-brand ms-3" href="/">Delivery.Кущац</a>
+
+        <button class="navbar-toggler me-3" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <div class="navbar-nav row col ms-1">
+
+                <div class="row col justify-content-lg-start">
+                    <div class="nav-item col-lg-auto">
+                        <a class="nav-link" href="/">Меню</a>
+                    </div>
+                    <div class="nav-item col-lg-auto visually-hidden" id="ordersButtonDiv">
+                        <a class="nav-link" href="/orders/">Заказы</a>
+                    </div>
+                    <div class="nav-item col-lg-auto ms-0 flex-row d-flex align-items-center visually-hidden"
+                        id="cartButtonDiv">
+                        <a class="nav-link" href="/cart/">Корзинa <span class="badge bg-success">123</span></a>
+                    </div>
+
+                </div>
+
+                <div class="row col justify-content-lg-end">
+                    <div class="nav-item col-lg-auto" id="registerButtonDiv">
+                        <a class="nav-link " href="/registration/">Регистрация</a>
+                    </div>
+                    <div class="nav-item col-lg-auto visually-hidden" id="userEmailDiv">
+                        <a class="nav-link align-middle" role="button" href="/profile/"></a>
+                    </div>
+                    <div class="nav-item col-lg-auto me-3 visually-hidden" id="logoutButtonDiv">
+                        <a class="nav-link" role="button" onclick="logout_handler()">Выход</a>
+                    </div>
+                    <div class="nav-item col-lg-auto me-3" id="loginButtonDiv">
+                        <a class="nav-link" role="button" href="/login/">Вход</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <script src="/scripts/auth.js"></script>
+    </nav>
+}

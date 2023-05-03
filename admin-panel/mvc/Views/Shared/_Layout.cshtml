@@ -1,0 +1,67 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AdminPanel</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/AdminPanel.styles.css" asp-append-version="true" />
+</head>
+
+<body>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg position-fixed w-100" style="z-index: 2;">
+        <a class="navbar-brand ms-3" href="/">Вас не зовут, вы сами приходите</a>
+
+        <button class="navbar-toggler me-3" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <div class="navbar-nav row col ms-1">
+
+
+                <div class="row col justify-content-lg-end">
+                    <div class="nav-item col-lg-auto" id="registerButtonDiv">
+                        <a class="nav-link " href="/registration/">Рестораны</a>
+                    </div>
+                    <div class="nav-item col-lg-auto" id="userEmailDiv">
+                        <a class="nav-link align-middle" role="button" href="/profile/">Dfi login</a>
+                    </div>
+                    <div class="nav-item col-lg-auto" id="logoutButtonDiv">
+                        <a class="nav-link" role="button">Персонал</a>
+                    </div>
+                    <div class="nav-item col-lg-auto me-3" id="loginButtonDiv">
+                        <a class="nav-link" role="button" href="/login/">Покупатели</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <script src="/scripts/auth.js"></script>
+    </nav>
+
+
+    <main role="main" class="container pb-3" style="padding-top: 4rem;">
+        @RenderBody()
+
+        
+
+
+
+
+    </main>
+
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

@@ -2,7 +2,6 @@ using AuthApi;
 using AuthBL;
 using AuthBL.Services;
 using AuthCommon.Interfaces;
-using AuthDAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
@@ -71,7 +70,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.MigrateDBWhenNecessary<AuthDBContext>();
+    app.MigrateAuthDB();
 }
 
 // await app.UpdateRolesAndClaims();

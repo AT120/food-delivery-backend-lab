@@ -1,6 +1,4 @@
-using System.Security.Claims;
 using System.Text;
-using BackendCommon;
 using BackendCommon.Const;
 using BackendCommon.DTO;
 using BackendCommon.Enums;
@@ -9,9 +7,7 @@ using BackendDAL;
 using BackendDAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualBasic;
-using ProjCommon;
-using ProjCommon.Enums;
+using ProjCommon.DTO;
 using ProjCommon.Exceptions;
 
 namespace BackendBl.Services;

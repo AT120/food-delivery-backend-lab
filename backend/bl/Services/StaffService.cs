@@ -1,5 +1,3 @@
-using System.Net;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using BackendCommon.Const;
 using BackendCommon.DTO;
@@ -9,8 +7,10 @@ using BackendDAL;
 using BackendDAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using ProjCommon;
+using ProjCommon.DTO;
 using ProjCommon.Enums;
 using ProjCommon.Exceptions;
+using ProjCommon.Helpers;
 
 namespace BackendBl.Services;
 
