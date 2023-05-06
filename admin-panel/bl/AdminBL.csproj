@@ -3,6 +3,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\common\ProjCommon.csproj" />
     <ProjectReference Include="..\common\AdminCommon.csproj" />
+    <ProjectReference Include="..\..\backend\dal\BackendDAL.csproj" />
+    <ProjectReference Include="..\..\auth\dal\AuthDAL.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -40,7 +40,7 @@ builder.Services.AddJwtAuthentication(
     }
 );
 
-builder.AddIdentityStorage();
+builder.AddUserIdentityStorage();
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireDigit = false;

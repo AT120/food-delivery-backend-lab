@@ -1,4 +1,4 @@
-namespace AuthCommon.Enums;
+namespace ProjCommon.Enums;
 
 public enum Gender
 {

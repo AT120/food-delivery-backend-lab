@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using AuthCommon.DTO;
+using ProjCommon.DTO;
 
 namespace AuthCommon.Interfaces;
 

@@ -2,6 +2,7 @@ using AuthCommon.DTO;
 using AuthCommon.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProjCommon.DTO;
 using ProjCommon.Exceptions;
 
 namespace AuthApi.Controllers;

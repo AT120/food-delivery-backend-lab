@@ -7,6 +7,7 @@ using BackendDAL;
 using BackendDAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ProjCommon.Const;
 using ProjCommon.DTO;
 using ProjCommon.Exceptions;
 
@@ -59,10 +60,9 @@ public class OrderService : IOrderService
 
 
         int size = await query.CountAsync();
-        int rangeStart = PageSize.Default * (page - 1);
-        int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
+        PageInfo pageInfo = new (page, size, PageSize.Default);
 
-        if (rangeStart > size)
+        if (pageInfo.RangeStart > size)
             throw new BackendException(400, "Invalid page number");
 
         var orders = await query
@@ -76,13 +76,13 @@ public class OrderService : IOrderService
                 Status = order.Status
             })
             .OrderBy(o => o.OrderTime)
-            .Skip(rangeStart)
+            .Skip(pageInfo.RangeStart)
             .Take(PageSize.Default)
             .ToListAsync();
 
         return new Page<CustomerOrderShort>
         {
-            PageInfo = new PageInfo(rangeStart, rangeEnd, size),
+            PageInfo = pageInfo,
             Items = orders
         };
     }

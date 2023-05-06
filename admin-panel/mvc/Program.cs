@@ -1,5 +1,6 @@
 using AdminBL.Services;
 using AdminCommon.Interfaces;
+using AuthBL;
 using BackendBl;
 using BackendBl.Services;
 using ProjCommon.Interfaces;
@@ -12,8 +13,12 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.AddBackendDB();
+builder.AddUserIdentityStorage();
+
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<IAdminRestaurantService, AdminRestaurantService>();
+builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

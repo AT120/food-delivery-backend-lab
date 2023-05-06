@@ -1,4 +1,4 @@
-@model Page<GenericItem>
+@model Page<UserProfile>
 @{
     int CurrentPage = Context.GetCurrentPage() ?? 1;
     string SearchQuery = Context.GetSearchQuery();
@@ -28,7 +28,16 @@
             {
                 <li class="list-group-item d-flex row">
                     <div class="item-name col-auto d-flex align-items-center">
-                        @item.Name
+                        @item.Email
+                    </div>
+                    <div class="item-name col-auto d-flex align-items-center">
+                        @item.FullName
+                    </div>
+                    <div class="item-name col-auto d-flex align-items-center">
+                        @foreach (var role in item.Roles)
+                        {
+                            @role
+                        }
                     </div>
                     <div class="justify-content-end col d-flex flex-reverse">
                         <div class="btn btn-warning me-3">Изменить</div>
@@ -41,8 +50,7 @@
 
     <ul class="pagination pt-3 ">
         <li id="prevpage" class="page-item @prevPageModifier">
-            <a class="page-link" asp-action="Index" asp-route-page="@(CurrentPage - 1)"
-                aria-label="Previous">
+            <a class="page-link" asp-action="Index" asp-route-page="@(CurrentPage - 1)" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>

@@ -1,4 +1,6 @@
+using System.Runtime.CompilerServices;
 using AuthDAL.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,5 +52,10 @@ public class AuthDBContext : IdentityDbContext<User, Role, Guid>
             .WithOne()
             .HasForeignKey(u => u.UserId)
             .IsRequired();
+
+        builder.Entity<User>()
+            .HasMany(u => u.Roles)
+            .WithMany(r => r.Users)
+            .UsingEntity<IdentityUserRole<Guid>>();
     }
 }

@@ -7,6 +7,7 @@ using BackendDAL;
 using BackendDAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using ProjCommon;
+using ProjCommon.Const;
 using ProjCommon.DTO;
 using ProjCommon.Enums;
 using ProjCommon.Exceptions;
@@ -165,10 +166,9 @@ public class StaffService: IStaffService
         query = SortingHelper.StaffSortingFuncs[sorting](query);
 
         int size = await query.CountAsync();
-        int rangeStart = PageSize.Default * (page - 1);
-        int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
-        
-        if (rangeStart > size)
+        PageInfo pageInfo = new (page, size, PageSize.Default);
+
+        if (pageInfo.RangeStart > size)
             throw new BackendException(400, "Invalid page number");     
         
         var orders = await query
@@ -178,13 +178,13 @@ public class StaffService: IStaffService
                 Id = o.Id,
                 RestaurantId = o.RestaurantId,
             })
-            .Skip(rangeStart)
+            .Skip(pageInfo.RangeStart)
             .Take(PageSize.Default)
             .ToListAsync();
 
         return new Page<CourierOrder>
         {
-            PageInfo = new PageInfo(rangeStart, rangeEnd, size),
+            PageInfo = pageInfo,
             Items = orders
         };
     }
@@ -218,10 +218,9 @@ public class StaffService: IStaffService
         query = SortingHelper.StaffSortingFuncs[sorting](query);
 
         int size = await query.CountAsync();
-        int rangeStart = PageSize.Default * (page - 1);
-        int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
+        PageInfo pageInfo = new (page, size, PageSize.Default);
         
-        if (rangeStart > size)
+        if (pageInfo.RangeStart > size)
             throw new BackendException(400, "Incorrect page number");     
         
         var orders = await query
@@ -233,13 +232,13 @@ public class StaffService: IStaffService
                 DeliveryTime = o.DeliveryTime,
                 Dishes = o.Dishes.Select(d => Converter.GetShortDish(d.Dish)).ToList()
             })
-            .Skip(rangeStart)
+            .Skip(pageInfo.RangeStart)
             .Take(PageSize.Default)
             .ToListAsync();
 
         return new Page<StaffOrder>
         {
-            PageInfo = new PageInfo(rangeStart, rangeEnd, size),
+            PageInfo = pageInfo,
             Items = orders
         };
     }
@@ -268,10 +267,9 @@ public class StaffService: IStaffService
         query = SortingHelper.StaffSortingFuncs[sorting](query);
 
         int size = await query.CountAsync();
-        int rangeStart = PageSize.Default * (page - 1);
-        int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
+        PageInfo pageInfo = new (page, size, PageSize.Default);
         
-        if (rangeStart > size)
+        if (pageInfo.RangeStart > size)
             throw new BackendException(400, "Incorrect page number");     
         
         var orders = await query
@@ -286,13 +284,13 @@ public class StaffService: IStaffService
                 DeliveryTime = o.DeliveryTime,
                 Dishes = o.Dishes.Select(d => Converter.GetShortDish(d.Dish)).ToList()
             })
-            .Skip(rangeStart)
+            .Skip(pageInfo.RangeStart)
             .Take(PageSize.Default)
             .ToListAsync();
 
         return new Page<StaffOrder>
         {
-            PageInfo = new PageInfo(rangeStart, rangeEnd, size),
+            PageInfo = pageInfo,
             Items = orders
         };
     }

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjCommon;
 using ProjCommon.Enums;
+using ProjCommon.Helpers;
 
 namespace AuthBL;
 

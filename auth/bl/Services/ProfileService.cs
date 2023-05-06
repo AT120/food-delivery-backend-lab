@@ -4,6 +4,7 @@ using AuthCommon.Interfaces;
 using AuthDAL;
 using AuthDAL.Models;
 using Microsoft.AspNetCore.Identity;
+using ProjCommon.DTO;
 using ProjCommon.Enums;
 using ProjCommon.Exceptions;
 
@@ -57,11 +58,6 @@ public class ProfileService : IProfileService
             PhoneNumber = user.PhoneNumber,
             Address = addr,
         };
-    }
-
-    public override string? ToString()
-    {
-        return base.ToString();
     }
 
     public async Task UpdateUserProfile(UserProfileEdit newProfile, ClaimsPrincipal userPrincipal)

@@ -1,6 +1,6 @@
 
 using System.ComponentModel.DataAnnotations;
-using AuthCommon.Enums;
+using ProjCommon.Enums;
 
 namespace AuthCommon.DTO;
 

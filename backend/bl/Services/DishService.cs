@@ -1,21 +1,17 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security.Claims;
 using BackendCommon.Const;
 using BackendCommon.DTO;
 using BackendCommon.Enums;
 using BackendCommon.Interfaces;
 using BackendDAL;
 using BackendDAL.Entities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using ProjCommon;
+using ProjCommon.Const;
 using ProjCommon.DTO;
-using ProjCommon.Enums;
 using ProjCommon.Exceptions;
+using ProjCommon.Helpers;
 
 namespace BackendBl.Services;
 
@@ -26,29 +22,6 @@ public class DishService : IDishService
     {
         _dbcontext = dc;
     }
-
-    private static Expression<Func<TPropertyBase, bool>> 
-        GetOrExpression<T, TPropertyBase>(IEnumerable<T> possibleOptions, PropertyInfo property)
-    {
-        var arg = Expression.Parameter(typeof(TPropertyBase));
-
-        var expr = Expression.Equal(
-            Expression.Constant(possibleOptions.First()),
-            Expression.MakeMemberAccess(arg, property)
-        );
-
-        foreach (var option in possibleOptions.Skip(1))
-        {
-            var disjunction = Expression.Equal(
-                Expression.Constant(option),
-                Expression.MakeMemberAccess(arg, property)
-            );
-            expr = Expression.OrElse(expr, disjunction);
-        }
-
-        return Expression.Lambda<Func<TPropertyBase, bool>>(expr, arg);
-    }
-
 
     public async Task<Page<DishShort>> GetDishes(
         Guid restaurantId,
@@ -74,7 +47,7 @@ public class DishService : IDishService
 
         if (!menus.IsNullOrEmpty())
         {
-            var filter = GetOrExpression<int, Dish>(
+            var filter = ExpressionHelper.GetOrExpression<int, Dish>(
                 menus,
                 typeof(Dish).GetProperty(nameof(Dish.MenuId))
             );
@@ -85,7 +58,7 @@ public class DishService : IDishService
 
         if (!categories.IsNullOrEmpty())
         {
-            var filter = GetOrExpression<DishCategory, Dish>(
+            var filter = ExpressionHelper.GetOrExpression<DishCategory, Dish>(
                 categories,
                 typeof(Dish).GetProperty(nameof(Dish.Category))
             );
@@ -96,21 +69,20 @@ public class DishService : IDishService
         query = SortingHelper.DishSortingFuncs[sorting](query);
 
         int size = await query.CountAsync();
-        int rangeStart = PageSize.Default * (page - 1);
-        int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
+        PageInfo pageInfo = new (page, size, PageSize.Default);
 
-        if (rangeStart > size)
+        if (pageInfo.RangeStart > size)
             throw new BackendException(400, "Invalid page number");
 
         var dishes = await query
             .Select(d => Converter.GetShortDish(d))
-            .Skip(rangeStart)
+            .Skip(pageInfo.RangeStart)
             .Take(PageSize.Default)
             .ToListAsync();
 
         return new Page<DishShort>
         {
-            PageInfo = new PageInfo(rangeStart, rangeEnd, size),
+            PageInfo = pageInfo,
             Items = dishes
         };
     }

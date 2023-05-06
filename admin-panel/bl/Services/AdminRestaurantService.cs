@@ -1,6 +1,8 @@
 ﻿using AdminCommon.Interfaces;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using BackendDAL;
+using Microsoft.AspNetCore.Server.IIS.Core;
 using ProjCommon.DTO;
+using ProjCommon.Exceptions;
 using ProjCommon.Interfaces;
 
 namespace AdminBL.Services;
@@ -8,9 +10,19 @@ namespace AdminBL.Services;
 public class AdminRestaurantService : IAdminRestaurantService
 {
     private readonly IRestaurantService _restaurantService;
-    public AdminRestaurantService(IRestaurantService rs)
+    private readonly BackendDBContext _backendDBContext;
+
+    public AdminRestaurantService(IRestaurantService rs, BackendDBContext bdb)
     {
+        _backendDBContext = bdb;
         _restaurantService = rs;
+    }
+
+    public async Task EditRestaurant(Guid restaurantId, string newName)
+    {
+        var restaurant = await _backendDBContext.Restaurants.FindAsync(restaurantId)
+            ?? throw new BackendException("test");
+        
     }
 
     public async Task<Page<GenericItem>> GetRestaurants(int page, string? searchQuery)
@@ -28,4 +40,6 @@ public class AdminRestaurantService : IAdminRestaurantService
         // rests2.Items = (ICollection<GenericItem>)rests.Items;
         return rests2;
     }
+
+
 }

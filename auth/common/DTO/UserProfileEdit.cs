@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using AuthCommon.Enums;
-using Microsoft.AspNetCore.Authentication;
+using ProjCommon.Enums;
 
 namespace AuthCommon.DTO;
 

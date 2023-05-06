@@ -1,7 +1,6 @@
-using AuthCommon.Enums;
 using ProjCommon.Enums;
 
-namespace AuthCommon.DTO;
+namespace ProjCommon.DTO;
 
 public class UserProfile
 {
@@ -10,6 +9,6 @@ public class UserProfile
     public string? PhoneNumber { get; set; }
     public Gender Gender { get; set; }
     public DateTime? BirthDate { get; set; }
-    public ICollection<string> Roles { get; set; }
+    public IEnumerable<string> Roles { get; set; }
     public string? Address { get; set; }
 }

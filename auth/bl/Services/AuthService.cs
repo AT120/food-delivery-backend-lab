@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProjCommon;
 using ProjCommon.Enums;
 using ProjCommon.Exceptions;
+using ProjCommon.Helpers;
 
 namespace AuthBL.Services;
 

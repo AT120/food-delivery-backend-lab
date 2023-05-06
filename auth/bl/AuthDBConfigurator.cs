@@ -8,7 +8,7 @@ using ProjCommon;
 namespace AuthBL;
 public static class AuthConfigurator
 {
-    public static void AddIdentityStorage(this WebApplicationBuilder builder)
+    public static void AddUserIdentityStorage(this WebApplicationBuilder builder)
     {
         builder.AddDB<AuthDBContext>("AuthConnection");
         builder.Services.AddIdentityCore<User>()

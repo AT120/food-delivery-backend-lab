@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using AuthCommon.Enums;
 using Microsoft.AspNetCore.Identity;
+using ProjCommon.Enums;
 
 namespace AuthDAL.Models;
 
@@ -13,4 +13,7 @@ public class User : IdentityUser<Guid>
     public DateTime? BirthDate { get; set; }
 
     public Gender Gender { get; set; }
+
+    public ICollection<Role> Roles { get; set; }
+
 }

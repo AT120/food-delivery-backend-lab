@@ -2,6 +2,7 @@ using System.Data;
 using BackendCommon.Const;
 using BackendDAL;
 using Microsoft.EntityFrameworkCore;
+using ProjCommon.Const;
 using ProjCommon.DTO;
 using ProjCommon.Exceptions;
 using ProjCommon.Interfaces;
@@ -35,21 +36,20 @@ public class RestaurantService : IRestaurantService
             query = query.Where(r => r.Name.Contains(searchQuery));
 
         int size = await query.CountAsync();
-        int rangeStart = PageSize.Default * (page-1);
-        int rangeEnd = Math.Min(rangeStart + PageSize.Default, size);
+        PageInfo pageInfo = new (page, size, PageSize.Default);
 
-        if (rangeStart > size)
+        if (pageInfo.RangeStart > size)
             throw new BackendException(400, "Incorrect page number");     
         
         var restaurants = await query
                 .OrderBy(x => x.Name)
-                .Skip(rangeStart)
+                .Skip(pageInfo.RangeStart)
                 .Take(PageSize.Default)
                 .ToListAsync();
         
 
         return new Page<Restaurant> {
-            PageInfo = new PageInfo(rangeStart, rangeEnd, size),
+            PageInfo = pageInfo,
             Items = restaurants
         };
     }
