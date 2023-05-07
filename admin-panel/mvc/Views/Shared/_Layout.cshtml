@@ -1,5 +1,4 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,9 +8,16 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AdminPanel.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/select2/select2.min.css" />
+
 </head>
 
 <body>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/select2/select2.min.js"></script>
+
     <nav class="navbar navbar-dark bg-dark navbar-expand-lg position-fixed w-100" style="z-index: 2;">
         <a class="navbar-brand ms-3" href="/">Вас не зовут, вы сами приходите</a>
 
@@ -24,43 +30,27 @@
 
 
                 <div class="row col justify-content-lg-end">
-                    <div class="nav-item col-lg-auto" id="registerButtonDiv">
-                        <a class="nav-link " href="/registration/">Рестораны</a>
+                    <div class="nav-item col-lg-auto">
+                        <a class="nav-link" asp-controller="Restaurant" asp-action="Index">Рестораны</a>
                     </div>
-                    <div class="nav-item col-lg-auto" id="userEmailDiv">
-                        <a class="nav-link align-middle" role="button" href="/profile/">Dfi login</a>
+                    <div class="nav-item col-lg-auto">
+                        <a class="nav-link" asp-controller="Users" asp-action="Index">Персонал</a>
                     </div>
-                    <div class="nav-item col-lg-auto" id="logoutButtonDiv">
-                        <a class="nav-link" role="button">Персонал</a>
-                    </div>
-                    <div class="nav-item col-lg-auto me-3" id="loginButtonDiv">
+                    <div class="nav-item col-lg-auto me-3">
                         <a class="nav-link" role="button" href="/login/">Покупатели</a>
                     </div>
                 </div>
 
             </div>
         </div>
-
-        <script src="/scripts/auth.js"></script>
     </nav>
 
 
     <main role="main" class="container pb-3" style="padding-top: 4rem;">
         @RenderBody()
-
-        
-
-
-
-
     </main>
 
 
-
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

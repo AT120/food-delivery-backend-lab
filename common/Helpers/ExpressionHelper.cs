@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace ProjCommon.Helpers;
 
-public static class ExpressionHelper
+public static class ExpressionHelper //TODO: refactor
 {
     public static Expression<Func<TPropertyBase, bool>> 
         GetOrExpression<T, TPropertyBase>(IEnumerable<T> possibleOptions, PropertyInfo property)

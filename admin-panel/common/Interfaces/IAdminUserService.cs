@@ -1,3 +1,4 @@
+using AdminCommon.DTO;
 using ProjCommon.DTO;
 using ProjCommon.Enums;
 
@@ -13,4 +14,7 @@ public interface IAdminUserService
         Gender? gender = null,
         IEnumerable<RoleType>? roles = null
     );
+
+    Task<UserProfileDetailed> GetUser(Guid userId);
+    Task EditUser(UserProfileEdit newUser);
 }

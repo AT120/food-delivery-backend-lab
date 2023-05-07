@@ -5,5 +5,7 @@ public enum RoleType
     Customer,
     Courier,
     Cook,
-    Manager
+    Manager,
+    Admin
 }
+

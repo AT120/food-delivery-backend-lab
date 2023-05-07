@@ -1,0 +1,114 @@
+@* @model UserProfileDetailed *@
+@model UserProfileEditDTO
+@{
+    var InputModel = ViewData["InputModel"] as UserProfileDetailed;
+    ViewData["Title"] = "Editing user";
+    bool[] userRoles = new bool[5];
+    foreach (var role in InputModel.Roles)
+        userRoles[(int)role] = true;
+
+
+    var restaurantsSelectList =
+    InputModel.AvailableRestaurants.Select(r => new SelectListItem(
+    r.RestaurantName,
+    r.RestaurantId.ToString(),
+    r.UserWorkingHere
+    ));
+
+    Guid userId = Context.Request.Query.TryParseSingle<Guid>("userId", Guid.Parse);
+    @* Model = new UserProfileEditDTO
+{
+UserId = userId,
+Roles = userRoles
+}; *@
+    @* Model.Roles = userRoles; *@
+}
+
+
+<h2 class="my-3">Профиль</h2>
+<form class="needs-validation" asp-controller="Users" asp-action="EditUser" method="post">
+    <div class="mb-3 row">
+        <label for="nameInput" class="col-lg col-form-label">ФИО</label>
+        <div class="col-lg-10">
+            <input type="text" id="nameInput" class="form-control-plaintext" value="@InputModel.FullName" readonly>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="emailInput" class="col-lg col-form-label">Email</label>
+        <div class="col-lg-10">
+            <input type="text" id="emailInput" value="@InputModel.Email" class="form-control-plaintext" readonly>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="phoneInput" class="col-lg col-form-label">Телефон</label>
+        <div class="col-lg-10">
+            <input type="text" id="phoneInput" value="@InputModel.PhoneNumber" class="form-control-plaintext" readonly>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="birthdateInput" class="col-lg col-form-label">День рождения</label>
+        <div class="col-lg-10">
+            <input min="1900-01-01" max="9999-12-31" type="date" id="birthdateInput" value="@InputModel.BirthDate"
+                class="form-control-plaintext" readonly>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="genderInput" class="col-lg col-form-label">Пол</label>
+        <div class="col-lg-10">
+            <div class="form-control-plaintext">@InputModel.Gender</div>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="restaurantInput" class="col-lg col-form-label">Ресторан</label>
+        <div class="col-lg-10 ">
+            @* <input class="form-control" list="restaurantOptions" id="restaurantInput"> *@
+            <select id="restaurantInput" asp-items="@restaurantsSelectList" asp-for="NewRestaurantId">
+                <option selected value="">Не работает в ресторане</option>
+
+            </select>
+        </div>
+    </div>
+
+    <input asp-for="UserId" value="@userId" hidden />
+
+    <div class="mb-3 form-check form-check-inline">
+        <input type="checkbox" asp-for="Roles[0]" class='form-check-input' id="customerRole" checked=@userRoles[0]>
+        <label for="customerRole" class="form-check-label">Покупатель</label>
+    </div>
+
+    <div class="mb-3 form-check form-check-inline">
+        <input type="checkbox" asp-for="Roles[1]" class='form-check-input' id="courierRole" checked=@userRoles[1]>
+        <label for="courierRole" class="form-check-label">Курьер</label>
+    </div>
+
+    <div class="mb-3 form-check form-check-inline">
+        <input type="checkbox" asp-for="Roles[2]" class='form-check-input' id="cookRole" checked=@userRoles[2]>
+        <label for="cookRole" class="form-check-label">Повар</label>
+    </div>
+
+    <div class="mb-3 form-check form-check-inline">
+        <input type="checkbox" asp-for="Roles[3]" class='form-check-input' id="managerRole" checked=@userRoles[3]>
+        <label for="managerRole" class="form-check-label">Менеджер</label>
+    </div>
+
+    <div class="mb-3 form-check form-check-inline">
+        <input type="checkbox" asp-for="Roles[4]" class='form-check-input' id="adminRole" checked=@userRoles[4]>
+        <label for="adminRole" class="form-check-label">Администратор</label>
+    </div>
+
+    <div class="row my-3 justify-content-lg-end">
+        <div class="col-auto">
+            <button type="submit" class="btn btn-warning">Изменить</button>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-danger">Заблокировать</button>
+        </div>
+    </div>
+
+</form>
+
+<script>
+    jQuery(() => {
+        $("#restaurantInput").select2()
+    })
+</script>
