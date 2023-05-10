@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<TokenPair>> Register(RegisterCreds creds)
+    public async Task<ActionResult<TokenPair>> Register(RegisterUserData creds)
     {
         try
         {

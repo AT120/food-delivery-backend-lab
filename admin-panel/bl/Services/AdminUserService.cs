@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing.Matching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ProjCommon;
 using ProjCommon.Const;
 using ProjCommon.DTO;
 using ProjCommon.Enums;
@@ -33,6 +34,140 @@ public class AdminUserService : IAdminUserService
 
     private readonly BackendException BadRestaurantId
         = new(400, "Необходимо указать ресторан для повара или менеджера");
+
+
+
+    private async Task AddUserToRole(User user, RoleType role, Guid? restaurantId)
+    {
+        var res = await _userManager.AddToRoleAsync(user, role.ToString());
+        if (!res.Succeeded)
+            throw new BackendException(400, res.Errors.First().Description);
+
+
+        switch (role)
+        {
+            case RoleType.Cook:
+                await _authDBContext.Cooks.AddAsync(new Cook
+                {
+                    BaseUser = user
+                });
+                await _backendDBContext.Cooks.AddAsync(new BackendDAL.Entities.Cook
+                {
+                    Id = user.Id,
+                    RestaurantId = restaurantId ?? throw BadRestaurantId
+                });
+                break;
+
+            case RoleType.Customer:
+                await _authDBContext.Customers.AddAsync(new Customer
+                {
+                    BaseUser = user
+                });
+                break;
+
+            case RoleType.Courier:
+                await _authDBContext.Couriers.AddAsync(new Courier
+                {
+                    BaseUser = user
+                });
+                await _backendDBContext.Couriers.AddAsync(new BackendDAL.Entities.Courier
+                {
+                    Id = user.Id,
+                });
+                break;
+
+            case RoleType.Manager:
+                await _authDBContext.Managers.AddAsync(new Manager
+                {
+                    BaseUser = user
+                });
+                await _backendDBContext.Managers.AddAsync(new BackendDAL.Entities.Manager
+                {
+                    Id = user.Id,
+                    RestaurantId = restaurantId ?? throw BadRestaurantId
+                });
+                break;
+        }
+    }
+
+    private async Task RemoveUserFromRole(User user, RoleType role)
+    {
+        var res = await _userManager.RemoveFromRoleAsync(user, role.ToString());
+        if (!res.Succeeded)
+            throw new BackendException(400, res.Errors.First().Description);
+
+        switch (role)
+        {
+            case RoleType.Cook:
+                _authDBContext.Cooks.Remove(new Cook { Id = user.Id });
+                _backendDBContext.Cooks.Remove(new BackendDAL.Entities.Cook { Id = user.Id });
+                break;
+
+            case RoleType.Customer:
+                _authDBContext.Customers.Remove(new Customer { Id = user.Id });
+                break;
+
+            case RoleType.Courier:
+                _authDBContext.Couriers.Remove(new Courier { Id = user.Id });
+                _backendDBContext.Couriers.Remove(new BackendDAL.Entities.Courier { Id = user.Id });
+                break;
+
+            case RoleType.Manager:
+                _authDBContext.Managers.Remove(new Manager { Id = user.Id });
+                _backendDBContext.Managers.Remove(new BackendDAL.Entities.Manager { Id = user.Id });
+                break;
+        }
+    }
+
+    private void UpdateUserRestaurant(
+        User user,
+        Guid? restaurantId,
+        IEnumerable<RoleType> userRoles)
+    {
+        bool isCook = userRoles.Any(r => r == RoleType.Cook);
+        bool isManager = userRoles.Any(r => r == RoleType.Manager);
+
+        if (isCook)
+        {
+            _backendDBContext.Cooks.Update(new BackendDAL.Entities.Cook
+            {
+                Id = user.Id,
+                RestaurantId = restaurantId ?? throw BadRestaurantId
+            });
+        }
+        if (isManager)
+        {
+            _backendDBContext.Managers.Update(new BackendDAL.Entities.Manager
+            {
+                Id = user.Id,
+                RestaurantId = restaurantId ?? throw BadRestaurantId
+            });
+        }
+    }
+
+    private async Task<bool> CheckRestaurant(IEnumerable<RoleType> roles, Guid? restaurnatId)
+    {
+        if (roles.Any(r => r == RoleType.Cook || r == RoleType.Manager))
+        {
+            if (restaurnatId == null)
+                return false;
+
+            bool restaurantExists = await _backendDBContext.Restaurants
+                .AnyAsync(r => r.Id == restaurnatId);
+                // throw new BackendException(404, "Указанный ресторан не существует");
+            return restaurantExists;
+        }
+
+        return true;
+    }
+
+    private async Task<User> GetUserWithRoles(Guid userId)
+    {
+        return await _userManager.Users
+            .Include(u => u.Roles)
+            .FirstOrDefaultAsync(u => u.Id == userId)
+                ?? throw new BackendException(404, "Такого пользователя не существует");
+    }
 
     public async Task<Page<UserProfile>> GetUsers(
         int page,
@@ -93,10 +228,7 @@ public class AdminUserService : IAdminUserService
 
     public async Task<UserProfileDetailed> GetUser(Guid userId)
     {
-        var user = await _userManager.Users
-            .Include(u => u.Roles)
-            .FirstOrDefaultAsync(u => u.Id == userId)
-                ?? throw new BackendException(404, "User does not exist");
+        var user = await GetUserWithRoles(userId);
 
         bool isCook = user.Roles.Any(u => u.RoleType == RoleType.Cook);
         bool isManager = user.Roles.Any(u => u.RoleType == RoleType.Manager);
@@ -104,8 +236,8 @@ public class AdminUserService : IAdminUserService
         var restaurants = await _backendDBContext.Restaurants
             .Select(r => new AvailableRestaurant
             {
-                RestaurantId = r.Id,
-                RestaurantName = r.Name
+                Id = r.Id,
+                Name = r.Name
             }).ToListAsync();
 
         if (!(isCook || isManager))
@@ -126,7 +258,7 @@ public class AdminUserService : IAdminUserService
 
         if (restaurantId is not null)
         {
-            var workPlace = restaurants.FirstOrDefault(r => r.RestaurantId == restaurantId);
+            var workPlace = restaurants.FirstOrDefault(r => r.Id == restaurantId);
             if (workPlace is not null)
                 workPlace.UserWorkingHere = true;
         }
@@ -135,135 +267,18 @@ public class AdminUserService : IAdminUserService
     }
 
 
-    private async Task AddUserToRole(User user, RoleType role, Guid? restaurantId)
-    {
-        var res = await _userManager.AddToRoleAsync(user, role.ToString());
-        if (!res.Succeeded)
-            throw new BackendException(400, res.Errors.First().Description);
-
-
-        switch (role)
-        {
-            case RoleType.Cook:
-                await _authDBContext.Cooks.AddAsync(new Cook
-                {
-                    BaseUser = user
-                });
-                await _backendDBContext.Cooks.AddAsync(new BackendDAL.Entities.Cook
-                {
-                    RestaurantId = restaurantId ?? throw BadRestaurantId
-                });
-                break;
-
-            case RoleType.Customer:
-                await _authDBContext.Customers.AddAsync(new Customer
-                {
-                    BaseUser = user
-                });
-                break;
-
-            case RoleType.Courier:
-                await _authDBContext.Couriers.AddAsync(new Courier
-                {
-                    BaseUser = user
-                });
-                await _backendDBContext.Couriers.AddAsync(new BackendDAL.Entities.Courier());
-                break;
-
-            case RoleType.Manager:
-                await _authDBContext.Managers.AddAsync(new Manager
-                {
-                    BaseUser = user
-                });
-                await _backendDBContext.Managers.AddAsync(new BackendDAL.Entities.Manager
-                {
-                    RestaurantId = restaurantId ?? throw BadRestaurantId
-                });
-                break;
-        }
-    }
-
-    private async Task RemoveUserFromRole(User user, RoleType role)
-    {
-        var res = await _userManager.RemoveFromRoleAsync(user, role.ToString());
-        if (!res.Succeeded)
-            throw new BackendException(400, res.Errors.First().Description);
-
-        switch (role)
-        {
-            case RoleType.Cook:
-                _authDBContext.Cooks.Remove(new Cook { Id = user.Id });
-                _backendDBContext.Cooks.Remove(new BackendDAL.Entities.Cook { Id = user.Id });
-                break;
-
-            case RoleType.Customer:
-                _authDBContext.Customers.Remove(new Customer { Id = user.Id });
-                break;
-
-            case RoleType.Courier:
-                _authDBContext.Couriers.Remove(new Courier { Id = user.Id });
-                _backendDBContext.Couriers.Remove(new BackendDAL.Entities.Courier { Id = user.Id });
-                break;
-
-            case RoleType.Manager:
-                _authDBContext.Managers.Remove(new Manager { Id = user.Id });
-                _backendDBContext.Managers.Remove(new BackendDAL.Entities.Manager { Id = user.Id });
-                break;
-        }
-    }
-
-    private void ChangeUserRestaurant(
-        User user,
-        Guid? restaurantId,
-        IEnumerable<RoleType> userRoles)
-    {
-        bool isCook = userRoles.Any(r => r == RoleType.Cook);
-        bool isManager = userRoles.Any(r => r == RoleType.Manager);
-
-        if (isCook)
-        {
-            _backendDBContext.Cooks.Update(new BackendDAL.Entities.Cook
-            {
-                Id = user.Id,
-                RestaurantId = restaurantId ?? throw BadRestaurantId
-            });
-        }
-        else if (isManager)
-        {
-            _backendDBContext.Managers.Update(new BackendDAL.Entities.Manager
-            {
-                Id = user.Id,
-                RestaurantId = restaurantId ?? throw BadRestaurantId
-            });
-        }
-    }
-
     public async Task EditUser(UserProfileEdit newUser)
     {
-        var user = await _userManager.Users
-            .Include(u => u.Roles)
-            .FirstOrDefaultAsync(u => u.Id == newUser.UserId)
-                ?? throw new BackendException(404, "Такого пользователя не существует");
+        var user = await GetUserWithRoles(newUser.UserId);
 
-        if (newUser.Roles.Any(r => r == RoleType.Cook || r == RoleType.Manager))
-        {
-            if (newUser.NewRestaurantId == null)
-                throw BadRestaurantId;
-            bool restaurantExists = await _backendDBContext.Restaurants
-                .AnyAsync(r => r.Id == newUser.NewRestaurantId);
-            if (!restaurantExists)
-                throw new BackendException(404, "Указанный ресторан не существует");
-        }
 
-        var rolesToAdd = newUser.Roles
-            .Except(
-                user.Roles.Select(r => r.RoleType)
-            );
+        if (!await CheckRestaurant(newUser.Roles, newUser.NewRestaurantId))
+            throw new  BackendException(404, "Указанный ресторан не существует");
 
-        var rolesToDelete = user.Roles
-            .Select(r => r.RoleType)
-            .Except(newUser.Roles);
-
+        var oldRoles = user.Roles.Select(r => r.RoleType).ToList();
+        var rolesToAdd = newUser.Roles.Except(oldRoles);
+        var rolesToDelete = oldRoles.Except(newUser.Roles);
+        var oldUnchangedRoles = oldRoles.Intersect(newUser.Roles);
         foreach (var role in rolesToAdd)
         {
             await AddUserToRole(user, role, newUser.NewRestaurantId);
@@ -274,9 +289,55 @@ public class AdminUserService : IAdminUserService
             await RemoveUserFromRole(user, role);
         }
 
-        ChangeUserRestaurant(user, newUser.NewRestaurantId, newUser.Roles);
+        UpdateUserRestaurant(user, newUser.NewRestaurantId, oldUnchangedRoles);
 
         //TODO: revert on error
+        // Task.WaitAll(new Task[] {
+            await _authDBContext.SaveChangesAsync();
+            await _backendDBContext.SaveChangesAsync();
+        // });
+    }
+
+    public async Task CreateUser(UserProfileCreate profile)
+    {
+        var user = new User 
+        {
+            UserName = profile.UserData.Email,
+            Email = profile.UserData.Email,
+            FullName = profile.UserData.Name,
+            PhoneNumber = profile.UserData.PhoneNumber,
+            Gender = profile.UserData.Gender,
+            BirthDate = profile.UserData.BirthDate,
+        };
+
+        var res = await _userManager.CreateAsync(user, profile.UserData.Password);
+        if (!res.Succeeded)
+            throw new BackendException(400, res.Errors.First().Description);
+        
+        if (!await CheckRestaurant(profile.Roles, profile.ResturantId))
+            throw new  BackendException(404, "Указанный ресторан не существует");
+        
+        foreach (RoleType role in profile.Roles)
+            await AddUserToRole(user, role, profile.ResturantId);
+
+        Task.WaitAll(new Task[] {
+            _authDBContext.SaveChangesAsync(),
+            _backendDBContext.SaveChangesAsync()
+        });
+    }
+
+
+    public async Task DeleteUser(Guid userId)
+    {
+        var user = await GetUserWithRoles(userId);
+        var roles = user.Roles.Select(r => r.RoleType).ToList();
+        foreach (RoleType role in roles) 
+        {
+            await RemoveUserFromRole(user, role);
+        }
+        
+        await _userManager.DeleteAsync(user);
+
         Task.WaitAll(new Task[] {
             _authDBContext.SaveChangesAsync(),
             _backendDBContext.SaveChangesAsync()

@@ -1,0 +1,102 @@
+@model UserProfileCreateDTO
+@{
+    var restaurants = ViewData["Restaurants"] as IEnumerable<AvailableRestaurant>;  
+    var restaurantsSelectList =
+        restaurants.Select(r => new SelectListItem(
+            r.Name,
+            r.Id.ToString(),
+            r.UserWorkingHere
+        ));
+}
+
+<h2 class="my-3">Добавить нового пользователя</h2>
+<form class="needs-validation" asp-controller="Users" asp-action="CreateUser" method="post">
+    <div class="mb-3 row">
+        <label for="nameInput" class="col-lg col-form-label">ФИО</label>
+        <div class="col-lg-10">
+            <input type="text" id="nameInput" asp-for="UserData.Name" class="form-control" required>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="emailInput" class="col-lg col-form-label">Email</label>
+        <div class="col-lg-10">
+            <input type="email" id="emailInput" asp-for="UserData.Email" class="form-control" required>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="passwordInput" class="col-lg col-form-label">Пароль</label>
+        <div class="col-lg-10">
+            <input type="text" id="passwordInput" asp-for="UserData.Password" class="form-control" value="abc123" required>
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="phoneInput" class="col-lg col-form-label">Телефон</label>
+        <div class="col-lg-10">
+            <input type="text" id="phoneInput" asp-for="UserData.PhoneNumber" class="form-control">
+        
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="birthdateInput" class="col-lg col-form-label">День рождения</label>
+        <div class="col-lg-10">
+            <input min="1900-01-01" max="9999-12-31" asp-for="UserData.BirthDate" type="date" id="birthdateInput" class="form-control">
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="genderInput" class="col-lg col-form-label">Пол</label>
+        <div class="col-lg-10">
+            <select class="form-select" asp-items="@Html.GetEnumSelectList<Gender>()" asp-for="UserData.Gender"></select>
+
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="restaurantInput" class="col-lg col-form-label">Ресторан</label>
+        <div class="col-lg-10 ">
+            @* <input class="form-control" list="restaurantOptions" id="restaurantInput"> *@
+            <select id="restaurantInput" asp-items="@restaurantsSelectList" asp-for="RestaurantId">
+                <option selected value="">Не работает в ресторане</option>
+
+            </select>
+        </div>
+    </div>
+
+    @* <input asp-for="UserId" value="@userId" hidden /> *@
+
+    <div class="mb-3 form-check form-check-inline">
+        <input type="checkbox" asp-for="Roles[0]" class='form-check-input' id="customerRole">
+        <label for="customerRole" class="form-check-label">Покупатель</label>
+    </div>
+
+    <div class="mb-3 form-check form-check-inline">
+        <input type="checkbox" asp-for="Roles[1]" class='form-check-input' id="courierRole">
+        <label for="courierRole" class="form-check-label">Курьер</label>
+    </div>
+
+    <div class="mb-3 form-check form-check-inline">
+        <input type="checkbox" asp-for="Roles[2]" class='form-check-input' id="cookRole" >
+        <label for="cookRole" class="form-check-label">Повар</label>
+    </div>
+
+    <div class="mb-3 form-check form-check-inline">
+        <input type="checkbox" asp-for="Roles[3]" class='form-check-input' id="managerRole" >
+        <label for="managerRole" class="form-check-label">Менеджер</label>
+    </div>
+
+    <div class="mb-3 form-check form-check-inline">
+        <input type="checkbox" asp-for="Roles[4]" class='form-check-input' id="adminRole" >
+        <label for="adminRole" class="form-check-label">Администратор</label>
+    </div>
+
+    <div class="row my-3 justify-content-lg-end">
+        <div class="col-auto">
+            <button type="submit" class="btn btn-success">Создать</button>
+        </div>
+    </div>
+
+</form>
+
+<script>
+    jQuery(() => {
+        $("#restaurantInput").select2()
+    })
+</script>

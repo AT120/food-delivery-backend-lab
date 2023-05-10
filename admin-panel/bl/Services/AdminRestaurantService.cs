@@ -1,6 +1,8 @@
-﻿using AdminCommon.Interfaces;
+﻿using AdminCommon.DTO;
+using AdminCommon.Interfaces;
 using BackendDAL;
 using Microsoft.AspNetCore.Server.IIS.Core;
+using Microsoft.EntityFrameworkCore;
 using ProjCommon.DTO;
 using ProjCommon.Exceptions;
 using ProjCommon.Interfaces;
@@ -39,6 +41,17 @@ public class AdminRestaurantService : IAdminRestaurantService
 
         // rests2.Items = (ICollection<GenericItem>)rests.Items;
         return rests2;
+    }
+
+    public async Task<IEnumerable<AvailableRestaurant>> GetAvailableRestaurants()
+    {
+        return await _backendDBContext.Restaurants
+            .Select(r => new AvailableRestaurant
+            {
+                Id = r.Id,
+                Name = r.Name,
+                UserWorkingHere = false
+            }).ToListAsync();
     }
 
 

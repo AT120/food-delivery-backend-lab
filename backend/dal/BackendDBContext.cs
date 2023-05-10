@@ -34,5 +34,17 @@ public class BackendDBContext : DbContext
         // builder.Entity<Customer>()
         //     .HasMany<Dish>(c => c.RatedDishes)
         //     .WithMany();
+
+        builder.Entity<Cook>()
+            .HasMany(c => c.Orders)
+            .WithOne(o => o.Cook)
+            .HasForeignKey(o => o.CookId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.Entity<Courier>()
+            .HasMany(c => c.Orders)
+            .WithOne(o => o.Courier)
+            .HasForeignKey(o => o.CourierId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

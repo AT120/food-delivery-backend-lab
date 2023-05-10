@@ -6,5 +6,5 @@ public class Cook
 
     public Guid RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; }
-    public ICollection<Order> Orders { get; set; }
+    public ICollection<Order>? Orders { get; set; }
 }

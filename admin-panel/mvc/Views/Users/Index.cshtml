@@ -51,7 +51,7 @@
         </form>
 
 
-        <div class="btn btn-success ms-auto">Добавить нового пользователя</div>
+        <a class="btn btn-success ms-auto" asp-controller="Users" asp-action="NewUserPage">Добавить нового пользователя</a>
     </div>
 
     <table class="table table-striped">
@@ -93,8 +93,7 @@
                     }
                     <td><a class="btn btn-warning" asp-controller="Users" asp-action="EditUserPage"
                             asp-route-userId="@item.Id">Изменить</a></td>
-                    <td><a class="btn btn-danger" asp-controller="Users" asp-action="Delete"
-                            asp-route-userId="@item.Id">Удалить</a></td>
+                    <td>@await Html.PartialAsync("_DeleteButton", new UserId(item.Id))</td>
                 </tr>
 
             }

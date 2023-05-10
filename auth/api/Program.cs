@@ -41,16 +41,7 @@ builder.Services.AddJwtAuthentication(
 );
 
 builder.AddUserIdentityStorage();
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequireDigit = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequiredLength = 5;
 
-    options.User.RequireUniqueEmail = true;
-    options.ClaimsIdentity.UserIdClaimType = ClaimType.UserId;
-});
 
 builder.Services.AddAuthorization(options =>
 {

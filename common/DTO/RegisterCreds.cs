@@ -1,10 +1,9 @@
-
 using System.ComponentModel.DataAnnotations;
 using ProjCommon.Enums;
 
 namespace AuthCommon.DTO;
 
-public class RegisterCreds
+public class RegisterUserData
 {
     [EmailAddress]
     public string Email { get; set; }

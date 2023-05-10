@@ -1,5 +1,6 @@
 using ProjCommon.DTO;
 using ProjCommon.Enums;
+using ProjCommon.Helpers;
 
 namespace AdminCommon.DTO;
 
@@ -13,10 +14,6 @@ public class UserProfileEdit
     {
         UserId = dto.UserId;
         NewRestaurantId = dto.NewRestaurantId;
-        List<RoleType> rolestmp = new();
-        for (int i = 0; i < 5; i++) //TODO:max roletype
-            if (dto.Roles[i])
-                rolestmp.Add((RoleType)i);
-        Roles = rolestmp;
+        Roles = RoleHelper.GetRolesList(dto.Roles);
     }
 }

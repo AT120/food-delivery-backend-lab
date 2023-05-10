@@ -10,9 +10,9 @@
 
     var restaurantsSelectList =
     InputModel.AvailableRestaurants.Select(r => new SelectListItem(
-    r.RestaurantName,
-    r.RestaurantId.ToString(),
-    r.UserWorkingHere
+        r.Name,
+        r.Id.ToString(),
+        r.UserWorkingHere
     ));
 
     Guid userId = Context.Request.Query.TryParseSingle<Guid>("userId", Guid.Parse);
@@ -48,8 +48,14 @@ Roles = userRoles
     <div class="mb-3 row">
         <label for="birthdateInput" class="col-lg col-form-label">День рождения</label>
         <div class="col-lg-10">
-            <input min="1900-01-01" max="9999-12-31" type="date" id="birthdateInput" value="@InputModel.BirthDate"
-                class="form-control-plaintext" readonly>
+            @* <input min="1900-01-01" max="9999-12-31" type="date" id="birthdateInput" value="@InputModel.BirthDate" *@
+                @* class="form-control-plaintext" readonly> *@
+            <span>
+                @if (InputModel.BirthDate.HasValue)
+                {
+                    @InputModel.BirthDate.Value.ToString("dd/MM/yyyy")
+                }
+            </span>
         </div>
     </div>
     <div class="mb-3 row">

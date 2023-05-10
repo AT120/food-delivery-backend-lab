@@ -17,4 +17,6 @@ public interface IAdminUserService
 
     Task<UserProfileDetailed> GetUser(Guid userId);
     Task EditUser(UserProfileEdit newUser);
+    Task CreateUser(UserProfileCreate profile);
+    Task DeleteUser(Guid userId);
 }

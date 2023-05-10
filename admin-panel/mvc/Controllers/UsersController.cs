@@ -11,10 +11,14 @@ public class UsersController : Controller
 {
 
     private readonly IAdminUserService _userService;
+    private readonly IAdminRestaurantService _restaurantService;
 
-    public UsersController(IAdminUserService aus)
+    public UsersController(
+        IAdminUserService aus,
+        IAdminRestaurantService ars)
     {
         _userService = aus;
+        _restaurantService = ars;
     }
 
     [HttpGet]
@@ -95,6 +99,57 @@ public class UsersController : Controller
 
     }
 
+    [HttpGet]
+    public async Task<ActionResult> NewUserPage()
+    {
+        ViewData["Restaurants"] = await _restaurantService.GetAvailableRestaurants();
+        return View();
+    }
 
+    [HttpPost]
+    public async Task<ActionResult> CreateUser(UserProfileCreateDTO user)
+    {   
+        try
+        {
+            await _userService.CreateUser(new UserProfileCreate(user));
+            return View("Success");
+        }
+        catch (BackendException be)
+        {
+            var evm = new ErrorViewModel
+            {
+                Message = be.UserMessage
+            };
+
+            return View("Error", evm);
+        }
+        catch
+        {
+            return View("Error");
+        }
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> Delete(UserId user)
+    {
+        try
+        {
+            await _userService.DeleteUser(user.Id);
+            return View("Success");
+        }
+        catch (BackendException be)
+        {
+            var evm = new ErrorViewModel
+            {
+                Message = be.UserMessage
+            };
+
+            return View("Error", evm);
+        }
+        catch
+        {
+            return View("Error");
+        }
+    }
     
 }

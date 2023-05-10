@@ -109,7 +109,7 @@ public class AuthService : IAuthService
     }
 
 
-    public async Task<TokenPair> Register(RegisterCreds creds)
+    public async Task<TokenPair> Register(RegisterUserData creds)
     {
         var user = new User 
         {

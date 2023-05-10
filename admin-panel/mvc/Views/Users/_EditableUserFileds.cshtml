@@ -1,7 +1,0 @@
-
-
-@{
-    var restaurantsSelectList = ViewData["restaurantsSelectList"] as IEnumerable<SelectListItem>;
-    var userRoles = ViewData["userRoles"] as string[];
-    Model.UserId = Context.Request.Query.TryParseSingle<Guid>("userId", Guid.Parse);
-}

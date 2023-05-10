@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using ProjCommon;
+using ProjCommon.Enums;
 
 namespace AuthBL;
 public static class AuthConfigurator
@@ -15,6 +16,16 @@ public static class AuthConfigurator
             .AddRoles<Role>()
             .AddRoleManager<RoleManager<Role>>()
             .AddEntityFrameworkStores<AuthDBContext>();     
+        builder.Services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequireDigit = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequiredLength = 5;
+
+            options.User.RequireUniqueEmail = true;
+            options.ClaimsIdentity.UserIdClaimType = ClaimType.UserId;
+        });
     }
 
     public static void MigrateAuthDB(this WebApplication app)
