@@ -1,5 +1,6 @@
 using AdminBL.Services;
 using AdminCommon.Interfaces;
+using AdminPanel.Filters;
 using AuthBL;
 using BackendBl;
 using BackendBl.Services;
@@ -8,12 +9,16 @@ using ProjCommon.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(conf => 
+{
+    conf.Filters.Add<ModelValidationFilter>();
+});
 
 
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.AddBackendDB();
 builder.AddUserIdentityStorage();
+
 
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<IAdminRestaurantService, AdminRestaurantService>();

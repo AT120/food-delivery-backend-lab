@@ -1,0 +1,6 @@
+@model IdOnly
+
+<form>
+    <input value="@Model.Id" asp-for="Id" hidden/>
+    <button class="btn btn-danger" onclick="delete_confirm(event)">Удалить</button>
+</form>

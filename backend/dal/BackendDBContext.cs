@@ -17,7 +17,7 @@ public class BackendDBContext : DbContext
     public DbSet<OrderedDish> OrderedDishes { get; set; }
     public DbSet<RatedDish> RatedDishes { get; set; }
     public DbSet<Restaurant> Restaurants { get; set; }
-
+    public object Task { get; set; }
 
     public BackendDBContext(DbContextOptions<BackendDBContext> options) : base(options)
     {
@@ -34,6 +34,20 @@ public class BackendDBContext : DbContext
         // builder.Entity<Customer>()
         //     .HasMany<Dish>(c => c.RatedDishes)
         //     .WithMany();
+
+        builder.Entity<Restaurant>().HasIndex(r => r.Name).IsUnique();
+        
+        builder.Entity<Restaurant>()
+            .HasMany(r => r.Cooks)
+            .WithOne(c => c.Restaurant)
+            .HasForeignKey(c => c.RestaurantId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<Restaurant>()
+            .HasMany(r => r.Managers)
+            .WithOne(c => c.Restaurant)
+            .HasForeignKey(c => c.RestaurantId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<Cook>()
             .HasMany(c => c.Orders)

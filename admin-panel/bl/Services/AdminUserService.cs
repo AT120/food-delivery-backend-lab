@@ -99,21 +99,21 @@ public class AdminUserService : IAdminUserService
         switch (role)
         {
             case RoleType.Cook:
-                _authDBContext.Cooks.Remove(new Cook { Id = user.Id });
+                _authDBContext.Cooks.Remove(new Cook { BaseUserId = user.Id });
                 _backendDBContext.Cooks.Remove(new BackendDAL.Entities.Cook { Id = user.Id });
                 break;
 
             case RoleType.Customer:
-                _authDBContext.Customers.Remove(new Customer { Id = user.Id });
+                _authDBContext.Customers.Remove(new Customer { BaseUserId = user.Id });
                 break;
 
             case RoleType.Courier:
-                _authDBContext.Couriers.Remove(new Courier { Id = user.Id });
+                _authDBContext.Couriers.Remove(new Courier { BaseUserId = user.Id });
                 _backendDBContext.Couriers.Remove(new BackendDAL.Entities.Courier { Id = user.Id });
                 break;
 
             case RoleType.Manager:
-                _authDBContext.Managers.Remove(new Manager { Id = user.Id });
+                _authDBContext.Managers.Remove(new Manager { BaseUserId = user.Id });
                 _backendDBContext.Managers.Remove(new BackendDAL.Entities.Manager { Id = user.Id });
                 break;
         }

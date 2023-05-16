@@ -1,0 +1,7 @@
+@model GenericItem
+
+<form class="d-flex" method="post" asp-controller="Restaurant" asp-action="Edit">
+    <input type="text" asp-for="Id" value="@Model.Id" hidden/>
+    <input type="text" asp-for="Name" placeholder="Новое название" class="form-control me-3" required hidden/>
+    <button class="btn btn-warning me-3" onclick="show_edit_field(event)">Изменить</button>
+</form>

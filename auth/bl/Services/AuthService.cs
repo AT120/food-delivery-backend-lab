@@ -135,8 +135,7 @@ public class AuthService : IAuthService
         await _dbcontext.Customers.AddAsync(new Customer
         {
             Address = creds.Address,
-            BaseUser = user,
-            Id = user.Id
+            BaseUserId = user.Id
         });
         
         await _dbcontext.SaveChangesAsync();

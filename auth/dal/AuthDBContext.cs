@@ -22,28 +22,33 @@ public class AuthDBContext : IdentityDbContext<User, Role, Guid>
     {
         base.OnModelCreating(builder);
 
+        
+        builder.Entity<Cook>().HasKey(c => c.BaseUserId);
         builder.Entity<Cook>()
             .HasOne(c => c.BaseUser)
             .WithOne()
-            .HasForeignKey<Cook>(c => c.Id)
+            .HasForeignKey<Cook>(c => c.BaseUserId)
             .IsRequired();
 
+        builder.Entity<Courier>().HasKey(c => c.BaseUserId);
         builder.Entity<Courier>()
             .HasOne(c => c.BaseUser)
             .WithOne()
-            .HasForeignKey<Courier>(c => c.Id)
+            .HasForeignKey<Courier>(c => c.BaseUserId)
             .IsRequired();
         
+        builder.Entity<Customer>().HasKey(c => c.BaseUserId);
         builder.Entity<Customer>()
             .HasOne(c => c.BaseUser)
             .WithOne()
-            .HasForeignKey<Customer>(c => c.Id)
+            .HasForeignKey<Customer>(c => c.BaseUserId)
             .IsRequired();
         
+        builder.Entity<Manager>().HasKey(c => c.BaseUserId);
         builder.Entity<Manager>()
             .HasOne(c => c.BaseUser)
             .WithOne()
-            .HasForeignKey<Manager>(c => c.Id)
+            .HasForeignKey<Manager>(c => c.BaseUserId)
             .IsRequired();
 
         builder.Entity<IssuedToken>().Property(x => x.Id).UseIdentityColumn();

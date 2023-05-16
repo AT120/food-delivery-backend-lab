@@ -1,6 +1,8 @@
 using AdminCommon.Interfaces;
-using BackendDAL;
+using AdminPanel.Models;
 using Microsoft.AspNetCore.Mvc;
+using ProjCommon.DTO;
+using ProjCommon.Exceptions;
 
 namespace AdminPanel.Controllers;
 
@@ -18,14 +20,52 @@ public class RestaurantController : Controller
     public async Task<ActionResult> Index(int? page, string? searchQuery)
     {
         var restaurants = await _restaurantService.GetRestaurants(page ?? 1, searchQuery);
-        return View("List", restaurants);
+        return View(restaurants);
     }
 
 
     [HttpPost]
-    public async Task<ActionResult> EditRestaurant()
+    public async Task<ActionResult> Edit(GenericItem rest)
     {
-        return Problem("This method has not been yet implemented", statusCode: 501); 
+        try
+        {
+            await _restaurantService.EditRestaurant(rest.Id, rest.Name);
+            return View("Success");
+        }
+        catch (BackendException be)
+        {
+            var evm = new ErrorViewModel
+            {
+                Message = be.UserMessage
+            };
+            return View("Error", evm);
+        }
+        catch
+        {
+            return View("Error");
+        }   
     }
-    // public async Task<ActionResult>
+
+
+    [HttpPost]
+    public async Task<ActionResult> Delete(IdOnly rest)
+    {
+        try
+        {
+            await _restaurantService.DeleteRestaurant(rest.Id);
+            return View("Success");
+        }
+        catch (BackendException be)
+        {
+            var evm = new ErrorViewModel
+            {
+                Message = be.UserMessage
+            };
+            return View("Error", evm);
+        }
+        catch
+        {
+            return View("Error");
+        }   
+    }
 }

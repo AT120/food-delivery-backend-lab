@@ -26,7 +26,7 @@ public class UsersController : Controller
         int? page,
         string? nameSearchQuery,
         string? emailSearchQuery,
-        string phoneSearchQuery,
+        string? phoneSearchQuery,
         Gender? gender,
         IEnumerable<RoleType>? roles)
     {

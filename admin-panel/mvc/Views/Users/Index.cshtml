@@ -27,6 +27,8 @@
 
     string prevPageModifier = (CurrentPage == 1) ? "disabled" : "";
     string nextPageModifier = (Model.PageInfo.Size == Model.PageInfo.RangeEnd) ? "disabled" : "";
+
+    ViewData["DeleteController"] = "Users";
 }
 
 <div class="d-flex flex-column">
@@ -93,7 +95,7 @@
                     }
                     <td><a class="btn btn-warning" asp-controller="Users" asp-action="EditUserPage"
                             asp-route-userId="@item.Id">Изменить</a></td>
-                    <td>@await Html.PartialAsync("_DeleteButton", new UserId(item.Id))</td>
+                    <td>@await Html.PartialAsync("_DeleteButton", new IdOnly(item.Id))</td>
                 </tr>
 
             }
