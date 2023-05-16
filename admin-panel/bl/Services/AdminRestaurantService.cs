@@ -143,4 +143,13 @@ public class AdminRestaurantService : IAdminRestaurantService
             
     }
 
+
+    public async Task CreateRestaurant(string name)
+    {
+        await _backendDBContext.Restaurants.AddAsync(
+            new BackendDAL.Entities.Restaurant {Name = name}
+        );
+        await _backendDBContext.SaveChangesAsync();
+    }
+
 }

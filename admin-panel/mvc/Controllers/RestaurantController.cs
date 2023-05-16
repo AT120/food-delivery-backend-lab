@@ -68,4 +68,27 @@ public class RestaurantController : Controller
             return View("Error");
         }   
     }
+
+
+    [HttpPost]
+    public async Task<ActionResult> Create(NameOnly rest)
+    {
+        try
+        {
+            await _restaurantService.CreateRestaurant(rest.Name);
+            return View("Success");
+        }
+        catch (BackendException be)
+        {
+            var evm = new ErrorViewModel
+            {
+                Message = be.UserMessage
+            };
+            return View("Error", evm);
+        }
+        catch
+        {
+            return View("Error");
+        }   
+    }
 }

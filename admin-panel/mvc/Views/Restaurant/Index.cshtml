@@ -14,8 +14,11 @@
             <button class="btn btn-outline-secondary">Поиск</button>
         </form>
 
-        <div class="btn col-auto btn-success ms-auto">Создать</div>
+        <div class="btn col-auto btn-success ms-auto" data-bs-toggle="modal" data-bs-target="#newRestModal">Создать
+        </div>
+        @await Html.PartialAsync("_RestaurantCreateFormModal", new NameOnly())
     </div>
+
 
     <div class="card mt-3">
         <ul class="list-group">
@@ -42,8 +45,7 @@
 
     <ul class="pagination pt-3 ">
         <li id="prevpage" class="page-item @prevPageModifier">
-            <a class="page-link" asp-action="Index" asp-route-page="@(CurrentPage - 1)"
-                aria-label="Previous">
+            <a class="page-link" asp-action="Index" asp-route-page="@(CurrentPage - 1)" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>

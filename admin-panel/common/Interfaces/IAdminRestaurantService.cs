@@ -9,4 +9,5 @@ public interface IAdminRestaurantService
     Task EditRestaurant(Guid restaurantId, string newName);
     Task<IEnumerable<AvailableRestaurant>> GetAvailableRestaurants();
     Task DeleteRestaurant(Guid restaurantId);
+    Task CreateRestaurant(string name);
 }

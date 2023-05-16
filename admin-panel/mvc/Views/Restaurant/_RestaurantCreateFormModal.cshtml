@@ -1,0 +1,22 @@
+@model NameOnly
+
+<div class="modal fade" id="newRestModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Создать новый ресторан</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Restaurant" asp-action="Create" method="post">
+                <div class="modal-body">
+                    <input class="form-control form-text" placeholder="Название" type="text" asp-for="Name" />
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
