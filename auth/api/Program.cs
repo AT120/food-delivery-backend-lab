@@ -63,7 +63,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.MigrateAuthDB();
 }
-
+await app.SeedRoles();
 // await app.UpdateRolesAndClaims();
 // app.UseHttpLogging();
 

@@ -1,7 +1,10 @@
+using System.Collections.Immutable;
 using AuthDAL;
 using AuthDAL.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjCommon;
 using ProjCommon.Enums;
@@ -12,10 +15,17 @@ public static class AuthConfigurator
     public static void AddUserIdentityStorage(this WebApplicationBuilder builder)
     {
         builder.AddDB<AuthDBContext>("AuthConnection");
-        builder.Services.AddIdentityCore<User>()
-            .AddRoles<Role>()
-            .AddRoleManager<RoleManager<Role>>()
+        // builder.Services.AddIdentity<User,  >()
+            // .AddRoles<Role>()
+            // .AddRoleManager<RoleManager<Role>>()
+            // .AddSignInManager<SignInManager<User>>()
+            // .AddEntityFrameworkStores<AuthDBContext>();     
+
+        builder.Services.AddIdentity<User, Role>()
+            .AddSignInManager<SignInManager<User>>()
+
             .AddEntityFrameworkStores<AuthDBContext>();     
+
         builder.Services.Configure<IdentityOptions>(options =>
         {
             options.Password.RequireDigit = false;
@@ -30,6 +40,30 @@ public static class AuthConfigurator
 
     public static void MigrateAuthDB(this WebApplication app)
         => app.MigrateDBWhenNecessary<AuthDBContext>();
+
+    public static async Task SeedRoles(this WebApplication app)
+    {
+       using (var scope = app.Services.CreateScope())
+        {
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
+            var existingRoles = await roleManager.Roles
+                .Select(s => s.RoleType)
+                .ToListAsync();
+            
+            var definedRoles = Enum.GetValues<RoleType>();
+            // var rolesToDelete = existingRoles.Except(definedRoles);
+            var rolesToCreate = definedRoles.Except(existingRoles);
+
+            foreach (var role in rolesToCreate)
+            {
+                await roleManager.CreateAsync(new Role
+                {
+                    Name = role.ToString(),
+                    RoleType = role,
+                });
+            }
+        }
+    }
     // public async static Task UpdateRolesAndClaims(this WebApplication app)
     // {
     //     using (var scope = app.Services.CreateScope())

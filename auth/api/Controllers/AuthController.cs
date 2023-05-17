@@ -4,6 +4,7 @@ using AuthCommon.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjCommon;
+using ProjCommon.DTO;
 using ProjCommon.Enums;
 using ProjCommon.Exceptions;
 using ProjCommon.Helpers;

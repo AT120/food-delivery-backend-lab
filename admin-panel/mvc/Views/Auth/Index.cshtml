@@ -1,0 +1,21 @@
+@model LoginCreds
+
+<div class="card col-lg-9 mt-5">
+    <div class="card-body">    
+        <h1 class="card-title">Авторизация</h1>
+
+        <form class="needs-validation" asp-controller="Auth" asp-action="Login">
+            <div class="mb-3">
+                <label for="emailInput"  class="form-label">Email</label>
+                <input type="email" asp-for="Email" id="emailInput" class="form-control" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="passwordInput"  class="form-label">Пароль</label>
+                <input type="password" asp-for="Password" id="passwordInput" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Войти</button>
+        </form>
+    </div>
+</div>

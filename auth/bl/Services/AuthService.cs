@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjCommon;
+using ProjCommon.DTO;
 using ProjCommon.Enums;
 using ProjCommon.Exceptions;
 using ProjCommon.Helpers;

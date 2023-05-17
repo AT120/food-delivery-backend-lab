@@ -1,9 +1,11 @@
 using AdminBL.Services;
 using AdminCommon.Interfaces;
+using AdminPanel;
 using AdminPanel.Filters;
 using AuthBL;
 using BackendBl;
 using BackendBl.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using ProjCommon.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,11 +20,23 @@ builder.Services.AddControllersWithViews(conf =>
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.AddBackendDB();
 builder.AddUserIdentityStorage();
+// builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+//     .AddCookie(opts =>
+//     {
+//         opts.AccessDeniedPath = "/Login";
+//         opts.LoginPath = "/Login";
+//     });
 
-
+builder.Services.ConfigureApplicationCookie(opts =>
+{
+        opts.AccessDeniedPath = "/Auth";
+        opts.LoginPath = "/Auth";
+        opts.Events.OnSigningIn =  AuthChecker.AdminOnlySingIn;
+});
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<IAdminRestaurantService, AdminRestaurantService>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();
 
 var app = builder.Build();
 
@@ -39,10 +53,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Restaurant}/{action=Index}/{id?}");
 
 app.Run();

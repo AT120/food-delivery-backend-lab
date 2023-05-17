@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using AuthCommon.Validators;
 
-namespace AuthCommon.DTO;
+namespace ProjCommon.DTO;
 
 public class LoginCreds
 {

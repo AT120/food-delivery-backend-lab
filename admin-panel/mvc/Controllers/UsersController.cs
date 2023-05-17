@@ -1,12 +1,14 @@
 using AdminCommon.DTO;
 using AdminCommon.Interfaces;
 using AdminPanel.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjCommon.Enums;
 using ProjCommon.Exceptions;
 
 namespace AdminPanel.Controllers;
 
+[Authorize]
 public class UsersController : Controller
 {
 

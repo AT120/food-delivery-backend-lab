@@ -1,11 +1,13 @@
 using AdminCommon.Interfaces;
 using AdminPanel.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjCommon.DTO;
 using ProjCommon.Exceptions;
 
 namespace AdminPanel.Controllers;
 
+[Authorize]
 public class RestaurantController : Controller
 {
 
