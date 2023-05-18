@@ -12,19 +12,25 @@ using ProjCommon.Enums;
 namespace AuthBL;
 public static class AuthConfigurator
 {
-    public static void AddUserIdentityStorage(this WebApplicationBuilder builder)
+
+
+    public static void AddUserIdentityStorage(this WebApplicationBuilder builder, bool cookieEnabled = false)
     {
         builder.AddDB<AuthDBContext>("AuthConnection");
-        // builder.Services.AddIdentity<User,  >()
-            // .AddRoles<Role>()
-            // .AddRoleManager<RoleManager<Role>>()
-            // .AddSignInManager<SignInManager<User>>()
-            // .AddEntityFrameworkStores<AuthDBContext>();     
 
-        builder.Services.AddIdentity<User, Role>()
-            .AddSignInManager<SignInManager<User>>()
-
-            .AddEntityFrameworkStores<AuthDBContext>();     
+        if (cookieEnabled)
+        {
+            builder.Services.AddIdentity<User, Role>()
+                .AddSignInManager<SignInManager<User>>()
+                .AddEntityFrameworkStores<AuthDBContext>();     
+        }
+        else
+        {
+            builder.Services.AddIdentityCore<User>()
+                .AddRoles<Role>()
+                .AddRoleManager<RoleManager<Role>>()
+                .AddEntityFrameworkStores<AuthDBContext>();           
+        }
 
         builder.Services.Configure<IdentityOptions>(options =>
         {

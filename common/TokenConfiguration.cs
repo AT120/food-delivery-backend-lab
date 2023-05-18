@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Diagnostics;
 using System.Security.Claims;
+using ProjCommon.Enums;
 
 namespace ProjCommon;
 
@@ -61,7 +62,6 @@ public static class TokenConfiguration
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(opts =>
             {
-                // opts = options;
                 opts.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -69,8 +69,9 @@ public static class TokenConfiguration
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = Key
-
+                    IssuerSigningKey = Key,
+                    NameClaimType = ClaimType.UserId,
+                    // RoleClaimType = ClaimType.Role,
                 };
 
                 if (events is not null)

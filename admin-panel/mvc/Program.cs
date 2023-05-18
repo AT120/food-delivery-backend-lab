@@ -19,7 +19,7 @@ builder.Services.AddControllersWithViews(conf =>
 
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.AddBackendDB();
-builder.AddUserIdentityStorage();
+builder.AddUserIdentityStorage(cookieEnabled: true);
 // builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 //     .AddCookie(opts =>
 //     {
