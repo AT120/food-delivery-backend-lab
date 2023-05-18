@@ -46,7 +46,12 @@ public class AuthController : Controller
         {
             return View("Error");
         }   
+    }
 
-
+    [HttpPost]
+    public async Task<ActionResult> Logout()
+    {
+        await _authService.SignOut();
+        return LocalRedirect("/");
     }
 }

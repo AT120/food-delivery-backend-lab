@@ -19,7 +19,7 @@
     <script src="~/lib/select2/select2.min.js"></script>
 
     <nav class="navbar navbar-dark bg-dark navbar-expand-lg position-fixed w-100" style="z-index: 2;">
-        <a class="navbar-brand ms-3" href="/">Вас не зовут, вы сами приходите</a>
+        <a class="navbar-brand ms-3" href="/">Админ панель</a>
 
         <button class="navbar-toggler me-3" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
             <span class="navbar-toggler-icon"></span>
@@ -36,6 +36,10 @@
                     <div class="nav-item col-lg-auto">
                         <a class="nav-link" asp-controller="Users" asp-action="Index">Пользователи</a>
                     </div>
+                    <form method="post" asp-controller="Auth" asp-action="Logout" class="nav-item col-lg-auto">
+                        <input type="submit" class="nav-link form-control-plaintext" value="ВЫХОД" />
+                    </form>
+
                 </div>
 
             </div>

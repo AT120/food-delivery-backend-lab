@@ -31,7 +31,8 @@ builder.Services.ConfigureApplicationCookie(opts =>
 {
         opts.AccessDeniedPath = "/Auth";
         opts.LoginPath = "/Auth";
-        opts.Events.OnSigningIn =  AuthChecker.AdminOnlySingIn;
+        opts.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+        // opts.Events.OnSigningIn =  AuthChecker.AdminOnlySingIn;
 });
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<IAdminRestaurantService, AdminRestaurantService>();

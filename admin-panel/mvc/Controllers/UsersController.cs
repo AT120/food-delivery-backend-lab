@@ -8,7 +8,7 @@ using ProjCommon.Exceptions;
 
 namespace AdminPanel.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class UsersController : Controller
 {
 

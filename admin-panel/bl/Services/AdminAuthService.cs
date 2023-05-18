@@ -20,8 +20,6 @@ public class AdminAuthService : IAdminAuthService
 
     private readonly BackendException FailedLogin= new (401, "Неверный логин или пароль.");
 
-    // public void SingIn()
-
     public async Task SignIn(string Email, string Password)
     {
         var user = await _userManager.Users
@@ -33,14 +31,16 @@ public class AdminAuthService : IAdminAuthService
             throw FailedLogin;
 
         var res = await _signInManager.PasswordSignInAsync(
-
             Email,
             Password,
             false,
             false
         );
-
+    
         if (!res.Succeeded)
             throw FailedLogin;
     }
+
+    public async Task SignOut() =>
+        await _signInManager.SignOutAsync();
 }
