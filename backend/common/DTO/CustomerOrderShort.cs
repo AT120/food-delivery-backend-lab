@@ -1,5 +1,6 @@
 using System.Net;
 using BackendCommon.Enums;
+using ProjCommon.Enums;
 
 namespace BackendCommon.DTO;
 

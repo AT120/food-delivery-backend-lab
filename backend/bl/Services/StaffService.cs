@@ -19,9 +19,11 @@ namespace BackendBl.Services;
 public class StaffService: IStaffService
 {
     private readonly BackendDBContext _dbcontext;
-    public StaffService(BackendDBContext dc)
+    private readonly INotifyService _notifyService;
+    public StaffService(BackendDBContext dc, INotifyService ns)
     {
         _dbcontext = dc;
+        _notifyService = ns;
     }
 
     private readonly BackendException UnauthorizedChangeStatus
@@ -83,6 +85,7 @@ public class StaffService: IStaffService
 
         order.CookId ??= userId;  // TODO: Тут может быть дефолт, и ничего не сработает
         order.Status = GetNextOrderStatus(order.Status);
+        await _notifyService.NotifyOrderStatusChanged(order.Id, order.CustomerId, order.Status);
 
         await _dbcontext.SaveChangesAsync();
     }
@@ -341,6 +344,7 @@ public class StaffService: IStaffService
 
             //TODO: race condition
             order.Status = OrderStatus.Canceled;
+            await _notifyService.NotifyOrderStatusChanged(order.Id, order.CustomerId, order.Status);
             await _dbcontext.SaveChangesAsync();
         // }
         // finally

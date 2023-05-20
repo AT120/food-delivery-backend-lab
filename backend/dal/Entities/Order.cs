@@ -1,4 +1,5 @@
 using BackendCommon.Enums;
+using ProjCommon.Enums;
 
 namespace BackendDAL.Entities;
 

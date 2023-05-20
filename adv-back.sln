@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminBL", "admin-panel\bl\A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminCommon", "admin-panel\common\AdminCommon.csproj", "{90677406-B0C4-4367-A0FB-D1492AEDB58C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationApi", "notifications\NotificationApi.csproj", "{7A0717E1-A0C8-47E5-893B-64FEB7C416F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,10 @@ Global
 		{90677406-B0C4-4367-A0FB-D1492AEDB58C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90677406-B0C4-4367-A0FB-D1492AEDB58C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90677406-B0C4-4367-A0FB-D1492AEDB58C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A0717E1-A0C8-47E5-893B-64FEB7C416F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A0717E1-A0C8-47E5-893B-64FEB7C416F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A0717E1-A0C8-47E5-893B-64FEB7C416F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A0717E1-A0C8-47E5-893B-64FEB7C416F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EE79605F-D31A-4F54-9335-3F01CEDAD5F1} = {A5A7A2E0-D207-4010-AFBE-1CB9C2F22C86}

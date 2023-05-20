@@ -18,17 +18,14 @@ public class AdminRestaurantService : IAdminRestaurantService
     private readonly IRestaurantService _restaurantService;
     private readonly BackendDBContext _backendDBContext;
     private readonly AuthDBContext _authDBContext;
-    private readonly IAdminUserService _adminUserService;
     private readonly UserManager<User> _userManager;
 
     public AdminRestaurantService(
         IRestaurantService rs,
         BackendDBContext bdb,
-        IAdminUserService aus,
         UserManager<User> um,
         AuthDBContext adb)
     {
-        _adminUserService = aus;
         _backendDBContext = bdb;
         _restaurantService = rs;
         _userManager = um;
@@ -67,7 +64,7 @@ public class AdminRestaurantService : IAdminRestaurantService
         var restaurant = await _backendDBContext.Restaurants.FindAsync(restaurantId)
             ?? throw new BackendException(404, "Такого ресторана не существует");
 
-        restaurant.Name = newName;
+        restaurant.Name = name;
         try
         {
             await _backendDBContext.SaveChangesAsync();
@@ -85,9 +82,11 @@ public class AdminRestaurantService : IAdminRestaurantService
     {
         
         var rests = await _restaurantService.GetRestaurants(page, searchQuery);
-        Page<GenericItem> rests2 = new();
-        rests2.PageInfo = rests.PageInfo;
-        rests2.Items = new List<GenericItem>();
+        Page<GenericItem> rests2 = new()
+        {
+            PageInfo = rests.PageInfo,
+            Items = new List<GenericItem>()
+        };
         foreach (var item in rests.Items)
         {
             rests2.Items.Add(item);

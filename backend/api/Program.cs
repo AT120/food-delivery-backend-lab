@@ -6,6 +6,7 @@ using ProjCommon;
 using ProjCommon.Filters;
 using Microsoft.OpenApi.Models;
 using ProjCommon.Interfaces;
+using ProjCommon.Configurators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.AddBackendDB();
 
 builder.ConfigureToken();
+builder.ConfigureNotificationQueue();
 builder.Services.AddJwtAuthentication(new JwtBearerEvents
 {
     OnTokenValidated = AuthenticationChecker.UserIdChecker
@@ -38,6 +40,7 @@ builder.Services.AddSwaggerGen( c =>
     c.IncludeXmlComments(filePath);
 });
 
+builder.Services.AddScoped<INotifyService, NotifyService>();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<ICartService, CartService>();

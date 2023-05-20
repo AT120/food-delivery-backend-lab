@@ -4,11 +4,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Diagnostics;
-using System.Security.Claims;
 using ProjCommon.Enums;
 
-namespace ProjCommon;
+namespace ProjCommon.Configurators;
 
 public static class TokenConfiguration
 {

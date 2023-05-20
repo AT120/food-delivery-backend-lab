@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using ProjCommon;
+using ProjCommon.Configurators;
 using ProjCommon.Enums;
 using ProjCommon.Filters;
 

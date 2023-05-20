@@ -18,5 +18,5 @@ public struct PageInfo
 public class Page<T>
 {
     public PageInfo PageInfo { get; set; }
-    public ICollection<T> Items { get; set; }
+    public ICollection<T> Items { get; set; } = new List<T>();
 }

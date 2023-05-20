@@ -5,10 +5,13 @@ using BackendCommon.Enums;
 using BackendCommon.Interfaces;
 using BackendDAL;
 using BackendDAL.Entities;
+using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ProjCommon.Configurators;
 using ProjCommon.Const;
 using ProjCommon.DTO;
+using ProjCommon.Enums;
 using ProjCommon.Exceptions;
 
 namespace BackendBl.Services;
@@ -17,11 +20,15 @@ public class OrderService : IOrderService
 {
     private readonly BackendDBContext _dbcontext;
     private readonly ICartService _cartService;
-    public OrderService(BackendDBContext dc, ICartService cs)
+    private readonly INotifyService _notifyService;
+
+    public OrderService(BackendDBContext dc, ICartService cs, INotifyService ns)
     {
         _dbcontext = dc;
         _cartService = cs;
+        _notifyService = ns;
     }
+
 
     private static string GetArchivedDishesError(IEnumerable<BackendDAL.Entities.DishInCart> dishes)
     {
@@ -143,9 +150,8 @@ public class OrderService : IOrderService
             RestaurantId = restaurantId,
             Status = OrderStatus.Created
         };
-
         await _dbcontext.Orders.AddAsync(order); //TODO: будет ли здесь id
-        await _dbcontext.SaveChangesAsync();
+        // await _dbcontext.SaveChangesAsync(); // необходимо 
 
         foreach (var dish in dishesToOrder)
         {
@@ -153,12 +159,14 @@ public class OrderService : IOrderService
             {
                 Count = dish.Count,
                 DishId = dish.DishId,
-                OrderId = order.Id,
+                // OrderId = order.Id,
+                Order = order,
             });
         }
 
-        await _cartService.CleanCart(userId);
+        await _cartService.CleanCart(userId); //TODO: revert
         await _dbcontext.SaveChangesAsync();
+        await _notifyService.NotifyOrderStatusChanged(order.Id, order.CustomerId, order.Status);
 
         return order.Id;
     }
@@ -218,8 +226,13 @@ public class OrderService : IOrderService
 
         //TODO: race condition
         order.Status = OrderStatus.Canceled;
+        // await ChangeOrderStatus(order, OrderStatus.Canceled);
 
         await _dbcontext.SaveChangesAsync();
+        await _notifyService.NotifyOrderStatusChanged(order.Id, order.CustomerId, order.Status);
+        
         return;
     }
+
+
 }

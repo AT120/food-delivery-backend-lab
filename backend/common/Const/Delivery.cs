@@ -4,5 +4,5 @@ namespace BackendCommon.Const;
 
 public static class Delivery
 {
-    public static readonly TimeSpan MinDeliveryTimeDiff = new TimeSpan(2,0,0);
+    public static readonly TimeSpan MinDeliveryTimeDiff = new(2,0,0);
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjCommon;
+using ProjCommon.Configurators;
 using ProjCommon.Enums;
 
 namespace AuthBL;

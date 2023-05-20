@@ -104,7 +104,7 @@ public class DishesController : ControllerBase
     {
         try
         {
-            await _dishService.RateDish(dishId, rating.value, ClaimsHelper.GetUserId(User));
+            await _dishService.RateDish(dishId, rating.Value, ClaimsHelper.GetUserId(User));
             return Ok();
         }
         catch (BackendException be)

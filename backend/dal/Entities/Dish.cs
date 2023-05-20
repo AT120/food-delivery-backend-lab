@@ -18,6 +18,7 @@ public class Dish
     public Guid RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; }
 
+    //TODO: много
     public int MenuId { get; set; }
     public Menu Menu { get; set; }
     

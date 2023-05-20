@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ProjCommon;
+namespace ProjCommon.Configurators;
 
 public static class DBConfigurator
 {

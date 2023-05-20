@@ -20,12 +20,11 @@ public static class PaginationHelper
 
     public static int? GetCurrentPage(this HttpContext context)
     {
-        int page;
         var pageParameter = context.Request.Query["page"];
         if (pageParameter == StringValues.Empty)
             return null;
 
-        var success = int.TryParse(pageParameter[0], out page);
+        var success = int.TryParse(pageParameter[0], out int page);
         return  (success) ? page : null;
     }
 }

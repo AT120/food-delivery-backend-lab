@@ -47,6 +47,8 @@ public class DishService : IDishService
 
         if (!menus.IsNullOrEmpty())
         {
+            query = query.Where(d => menus.Contains(d.MenuId));
+            //TODO: рефлексия
             var filter = ExpressionHelper.GetOrExpression<int, Dish>(
                 menus,
                 typeof(Dish).GetProperty(nameof(Dish.MenuId))
@@ -58,6 +60,8 @@ public class DishService : IDishService
 
         if (!categories.IsNullOrEmpty())
         {
+            query = query.Where(d => categories.Contains(d.Category));
+
             var filter = ExpressionHelper.GetOrExpression<DishCategory, Dish>(
                 categories,
                 typeof(Dish).GetProperty(nameof(Dish.Category))
