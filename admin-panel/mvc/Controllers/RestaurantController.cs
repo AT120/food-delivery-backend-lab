@@ -25,6 +25,12 @@ public class RestaurantController : Controller
         return View(restaurants);
     }
 
+    [HttpGet]
+    public async Task<ActionResult> ListRestaurants(int? page, string? searchQuery)
+    {
+        var restaurants = await _restaurantService.GetRestaurants(page ?? 1, searchQuery);
+        return new JsonResult(restaurants);
+    }
 
     [HttpPost]
     public async Task<ActionResult> Edit(GenericItem rest)

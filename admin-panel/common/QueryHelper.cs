@@ -10,7 +10,7 @@ namespace AdminCommon;
 
 public static class QueryHelper
 {
-    public static T TryParseSingle<T>(this IQueryCollection queris, string key)
+    public static T? TryParseSingle<T>(this IQueryCollection queris, string key)
     {
         var sqvalues = queris[key];
         if (sqvalues == StringValues.Empty)
@@ -19,7 +19,7 @@ public static class QueryHelper
         try
         {
             
-            return (T)Convert.ChangeType(sqvalues.First(), typeof(T));
+            return (T?)Convert.ChangeType(sqvalues.First(), typeof(T));
         }
         catch
         {
@@ -28,7 +28,7 @@ public static class QueryHelper
         
     }
 
-    public static T TryParseSingle<T>(
+    public static T? TryParseSingle<T>(
         this IQueryCollection queris,
         string key,
         Func<string, T> converter)
@@ -39,7 +39,7 @@ public static class QueryHelper
 
         try
         {    
-            return converter(sqvalues.First());
+            return converter(sqvalues.First()!);
         }
         catch
         {
@@ -52,7 +52,7 @@ public static class QueryHelper
         => (T)Convert.ChangeType(value, typeof(T));
         
 
-    public static IEnumerable<T> TryParseMany<T>(this IQueryCollection queris, string key)
+    public static IEnumerable<T>? TryParseMany<T>(this IQueryCollection queris, string key)
     {
         var sqvalues = queris[key];
         if (sqvalues == StringValues.Empty)
@@ -72,7 +72,7 @@ public static class QueryHelper
         }
     }
 
-    public static IEnumerable<T> TryParseMany<T>(
+    public static IEnumerable<T>? TryParseMany<T>(
         this IQueryCollection queris,
         string key,
         Func<string, T> converter)
@@ -100,6 +100,6 @@ public static class QueryHelper
     public static string GetSearchQuery(this HttpContext context)
     {
         var sqvalues = context.Request.Query["searchQuery"];
-        return (sqvalues == StringValues.Empty) ? "" : sqvalues[0];
+        return (sqvalues == StringValues.Empty) ? "" : sqvalues[0]!;
     }
 }

@@ -1,6 +1,8 @@
 @model UserProfileCreateDTO
 @{
-    var restaurants = ViewData["Restaurants"] as IEnumerable<AvailableRestaurant>;  
+    var restaurants = ViewData["Restaurants"] as IEnumerable<AvailableRestaurant>
+        ?? throw new ArgumentException("You have to pass Restaurants in this view");
+          
     var restaurantsSelectList =
         restaurants.Select(r => new SelectListItem(
             r.Name,

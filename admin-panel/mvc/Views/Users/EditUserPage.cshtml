@@ -1,7 +1,9 @@
 @* @model UserProfileDetailed *@
 @model UserProfileEditDTO
 @{
-    var InputModel = ViewData["InputModel"] as UserProfileDetailed;
+    var InputModel = ViewData["InputModel"] as UserProfileDetailed
+        ?? throw new ArgumentException("You have to pass InputModel in view");
+
     ViewData["Title"] = "Editing user";
     bool[] userRoles = new bool[5];
     foreach (var role in InputModel.Roles)
@@ -75,6 +77,17 @@ Roles = userRoles
         </div>
     </div>
 
+    <div class="mb-3 row">
+        <label for="restaurantInput" class="col-lg col-form-label">Ресторан</label>
+        <div class="col-lg-10 row">
+            @* <input class="form-control" list="restaurantOptions" id="restaurantInput"> *@
+
+            <select id="restaurantInputDynamic" class="form-select w-auto" >
+                <option selected value="">Не работает в ресторане</option>
+            </select>
+        </div>
+    </div>
+
     <input asp-for="UserId" value="@userId" hidden />
 
     <div class="mb-3 form-check form-check-inline">
@@ -116,5 +129,10 @@ Roles = userRoles
 <script>
     jQuery(() => {
         $("#restaurantInput").select2()
+        $("#restaurantInputDynamic").select2({
+            ajax: {
+                url: '/'
+            }
+        })
     })
 </script>

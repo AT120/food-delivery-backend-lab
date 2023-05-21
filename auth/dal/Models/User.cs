@@ -7,7 +7,7 @@ namespace AuthDAL.Models;
 public class User : IdentityUser<Guid>
 // where T : IEquatable<T>
 {
-    public string FullName { get; set; }
+    public string FullName { get; set; } = "";
 
     [Column(TypeName = "date")]
     public DateTime? BirthDate { get; set; }
@@ -15,5 +15,4 @@ public class User : IdentityUser<Guid>
     public Gender Gender { get; set; }
 
     public ICollection<Role> Roles { get; set; }
-
 }

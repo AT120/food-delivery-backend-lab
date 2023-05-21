@@ -21,7 +21,6 @@ public class AdminUserService : IAdminUserService
     private readonly AuthDBContext _authDBContext;
     private readonly BackendDBContext _backendDBContext;
     private readonly UserManager<User> _userManager;
-    private readonly RoleManager<Role> _roleManager;
     public AdminUserService(
         AuthDBContext adbc,
         UserManager<User> um,
@@ -200,7 +199,7 @@ public class AdminUserService : IAdminUserService
         {
             query = query.Where(u =>
                 u.Roles.Any(userRole =>
-                    roles.Contains(userRole.RoleType)
+                    roles!.Contains(userRole.RoleType)
                 )
             );
         }

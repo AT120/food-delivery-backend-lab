@@ -11,10 +11,9 @@ public class ModelValidationFilter : ActionFilterAttribute
 
         if (!context.ModelState.IsValid)
         {
-            var controller = context.Controller as Controller;
             var errors = context.ModelState
                     .Where(m => m.Value.Errors.Count > 0)
-                    .SelectMany(m => 
+                    .SelectMany(m =>
                         m.Value.Errors.Select(e => e.ErrorMessage)
                     );
 
@@ -22,8 +21,9 @@ public class ModelValidationFilter : ActionFilterAttribute
             {
                 Message = string.Join(';', errors)
             };
-
-            context.Result = controller.View("Error", evm);
+            
+            if (context.Controller is Controller controller)
+                context.Result = controller.View("Error", evm);
         }
 
         base.OnActionExecuting(context);

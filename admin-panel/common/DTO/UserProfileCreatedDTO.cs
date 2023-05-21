@@ -6,7 +6,7 @@ namespace AdminCommon.DTO;
 
 public class UserProfileCreateDTO
 {
-    public RegisterUserData UserData { get; set; }
+    public required RegisterUserData UserData { get; set; }
     public Guid? RestaurantId { get; set; }
     public bool[] Roles { get; set; } = new bool[5];
 
