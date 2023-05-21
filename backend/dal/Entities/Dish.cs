@@ -19,8 +19,8 @@ public class Dish
     public Restaurant Restaurant { get; set; }
 
     //TODO: много
-    public int MenuId { get; set; }
-    public Menu Menu { get; set; }
+    // public int MenuId { get; set; }
+    public ICollection<Menu> Menus { get; set; }
     
     [Range(0, 10)]
     public double Rating { get; set; }
