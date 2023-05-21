@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ProjCommon.DTO;
 using ProjCommon.Enums;
 
 namespace AdminCommon.DTO;
@@ -12,6 +13,6 @@ public class UserProfileDetailed
     public string? PhoneNumber { get; set; }
     public Gender Gender { get; set; }
     public required IEnumerable<RoleType> Roles { get; set; }
-    
-    public required IEnumerable<AvailableRestaurant> AvailableRestaurants { get; set; }
+    public GenericItem? Restaurant { get; set; }
+    // public required IEnumerable<AvailableRestaurant> AvailableRestaurants { get; set; }
 }

@@ -25,7 +25,7 @@ public static class Converter
 
     public static UserProfileDetailed GetUserProfileDetailed(
         User user,
-        IEnumerable<AvailableRestaurant> restaurants)
+        BackendDAL.Entities.Restaurant? restaurant = null)
     {
         return new UserProfileDetailed
         {
@@ -34,7 +34,7 @@ public static class Converter
             Email = user.Email,
             FullName = user.FullName,
             Gender = user.Gender,
-            AvailableRestaurants = restaurants,
+            Restaurant = (restaurant == null) ? null : new GenericItem {Id = restaurant.Id, Name = restaurant.Name},
             PhoneNumber = user.PhoneNumber,
             Roles = GetRoleTypes(user.Roles)
         };

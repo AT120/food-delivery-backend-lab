@@ -232,37 +232,35 @@ public class AdminUserService : IAdminUserService
         bool isCook = user.Roles.Any(u => u.RoleType == RoleType.Cook);
         bool isManager = user.Roles.Any(u => u.RoleType == RoleType.Manager);
 
-        var restaurants = await _backendDBContext.Restaurants
-            .Select(r => new AvailableRestaurant
-            {
-                Id = r.Id,
-                Name = r.Name
-            }).ToListAsync();
+        // var restaurants = await _backendDBContext.Restaurants
+        //     .Select(r => new AvailableRestaurant
+        //     {
+        //         Id = r.Id,
+        //         Name = r.Name
+        //     }).ToListAsync();
 
-        if (!(isCook || isManager))
-            return Converter.GetUserProfileDetailed(user, restaurants);
-
-
-        Guid? restaurantId = null;
         if (isCook)
         {
-            var cook = await _backendDBContext.Cooks.FindAsync(userId);
-            restaurantId = cook?.RestaurantId;
+            var cook = await _backendDBContext.Cooks
+                .Include(u => u.Restaurant)
+                .FirstOrDefaultAsync(u => u.Id == userId)
+                    ?? throw new BackendException(500, "Ужасные вещи случились.");
+            
+            return Converter.GetUserProfileDetailed(user, cook.Restaurant);
         }
         else if (isManager)
         {
-            var manager = await _backendDBContext.Managers.FindAsync(userId);
-            restaurantId = manager?.RestaurantId;
+            var manager = await _backendDBContext.Managers
+                .Include(u => u.Restaurant)
+                .FirstOrDefaultAsync(u => u.Id == userId)
+                    ?? throw new BackendException(500, "Ужасные вещи случились.");
+            
+            return Converter.GetUserProfileDetailed(user, manager.Restaurant);
         }
-
-        if (restaurantId is not null)
+        else 
         {
-            var workPlace = restaurants.FirstOrDefault(r => r.Id == restaurantId);
-            if (workPlace is not null)
-                workPlace.UserWorkingHere = true;
+            return Converter.GetUserProfileDetailed(user);
         }
-
-        return Converter.GetUserProfileDetailed(user, restaurants);
     }
 
 

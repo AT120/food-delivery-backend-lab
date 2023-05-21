@@ -10,12 +10,12 @@
         userRoles[(int)role] = true;
 
 
-    var restaurantsSelectList =
+    @* var restaurantsSelectList =
     InputModel.AvailableRestaurants.Select(r => new SelectListItem(
         r.Name,
         r.Id.ToString(),
         r.UserWorkingHere
-    ));
+    )); *@
 
     Guid userId = Context.Request.Query.TryParseSingle<Guid>("userId", Guid.Parse);
     @* Model = new UserProfileEditDTO
@@ -66,24 +66,25 @@ Roles = userRoles
             <div class="form-control-plaintext">@InputModel.Gender</div>
         </div>
     </div>
-    <div class="mb-3 row">
+    @* <div class="mb-3 row">
         <label for="restaurantInput" class="col-lg col-form-label">Ресторан</label>
         <div class="col-lg-10 ">
-            @* <input class="form-control" list="restaurantOptions" id="restaurantInput"> *@
+            <input class="form-control" list="restaurantOptions" id="restaurantInput">
             <select id="restaurantInput" asp-items="@restaurantsSelectList" asp-for="NewRestaurantId">
                 <option selected value="">Не работает в ресторане</option>
 
             </select>
         </div>
-    </div>
+    </div> *@
 
     <div class="mb-3 row">
         <label for="restaurantInput" class="col-lg col-form-label">Ресторан</label>
-        <div class="col-lg-10 row">
-            @* <input class="form-control" list="restaurantOptions" id="restaurantInput"> *@
-
-            <select id="restaurantInputDynamic" class="form-select w-auto" >
-                <option selected value="">Не работает в ресторане</option>
+        <div class="col-lg-10 ">
+            <select id="restaurantInputDynamic" asp-for="NewRestaurantId" class="form-select w-25">
+                @if (@InputModel.Restaurant != null)
+                {
+                    <option selected value="@InputModel.Restaurant.Id">@InputModel.Restaurant.Name</option>
+                }
             </select>
         </div>
     </div>
@@ -131,8 +132,21 @@ Roles = userRoles
         $("#restaurantInput").select2()
         $("#restaurantInputDynamic").select2({
             ajax: {
-                url: '/'
-            }
+                url: '/Restaurant/ListRestaurants',
+                processResults: process_restaurants,
+                data: (params) => {
+                    return {
+                        searchQuery: params.term,
+                        page: params.page || 1
+                    }
+                },
+                delay: 250,
+                cache: true,
+            },
+            minimumInputLength: 2,
+            allowClear: true,
+            placeholder: 'Не работает в ресторане'
+
         })
     })
 </script>
