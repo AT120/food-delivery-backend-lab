@@ -44,8 +44,9 @@ builder.Services.AddScoped<INotifyService, NotifyService>();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IStaffService, StaffService>();
+builder.Services.AddScoped<IStaffOrdersService, StaffOrdersService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IStaffMenuService, StaffMenusService>();
 
 var app = builder.Build();
 

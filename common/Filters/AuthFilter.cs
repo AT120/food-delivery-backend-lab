@@ -9,12 +9,18 @@ public class AuthFilter : IOperationFilter
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
 
-        var authAttributes = context.MethodInfo
+        var methodAuthAttributes = context.MethodInfo
             .GetCustomAttributes(true)
             .OfType<AuthorizeAttribute>()
             .Distinct();
 
-        if (authAttributes.Any())
+        var controllerAuthAttributes = context.MethodInfo.DeclaringType
+            .GetCustomAttributes(true)
+            .OfType<AuthorizeAttribute>()
+            .Distinct();
+
+
+        if (methodAuthAttributes.Any() || controllerAuthAttributes.Any())
         {
 
             operation.Responses.TryAdd("401", new OpenApiResponse { Description = "Unauthorized" });

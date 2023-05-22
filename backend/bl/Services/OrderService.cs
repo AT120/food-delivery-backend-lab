@@ -52,6 +52,9 @@ public class OrderService : IOrderService
         int? orderIdQuery
     )
     {
+        if (page < 1)
+            throw new BackendException(400, "Incorrect page number");
+            
         var query = _dbcontext.Orders
             .Where(o =>
                 ((int)o.Status & status) != 0 &&
@@ -150,8 +153,7 @@ public class OrderService : IOrderService
             RestaurantId = restaurantId,
             Status = OrderStatus.Created
         };
-        await _dbcontext.Orders.AddAsync(order); //TODO: будет ли здесь id
-        // await _dbcontext.SaveChangesAsync(); // необходимо 
+        await _dbcontext.Orders.AddAsync(order);
 
         foreach (var dish in dishesToOrder)
         {
@@ -164,7 +166,7 @@ public class OrderService : IOrderService
             });
         }
 
-        await _cartService.CleanCart(userId); //TODO: revert
+        await _cartService.CleanCart(userId);
         await _dbcontext.SaveChangesAsync();
         await _notifyService.NotifyOrderStatusChanged(order.Id, order.CustomerId, order.Status);
 
@@ -178,10 +180,9 @@ public class OrderService : IOrderService
             .Where(o => o.Id == orderId && o.CustomerId == userId)
             .Include(o => o.Dishes)
             .ThenInclude(d => d.Dish)
-            .FirstOrDefaultAsync();
-
-        if (prevOrder is null)
-            throw new BackendException(404, "User does not have orders with requested id");
+            .FirstOrDefaultAsync() 
+                ?? throw new BackendException(404, "User does not have orders with requested id");
+    
         var cart = await _dbcontext.DishesInCart
             .Where(d => d.CustomerId == userId)
             .ToListAsync();

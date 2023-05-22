@@ -13,6 +13,7 @@ public class BackendDBContext : DbContext
     public DbSet<DishInCart> DishesInCart { get; set; }
     public DbSet<Manager> Managers { get; set; }
     public DbSet<Menu> Menus { get; set; }
+    // public DbSet<DishMenu> DishesInMenu { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderedDish> OrderedDishes { get; set; }
     public DbSet<RatedDish> RatedDishes { get; set; }
@@ -37,6 +38,11 @@ public class BackendDBContext : DbContext
 
         builder.Entity<Restaurant>().HasIndex(r => r.Name).IsUnique();
         
+        // builder.Entity<Menu>()
+        //     .HasMany(m => m.Dishes)
+        //     .WithMany(d => d.Menus)
+        //     .UsingEntity<DishMenu>();
+
         builder.Entity<Restaurant>()
             .HasMany(r => r.Cooks)
             .WithOne(c => c.Restaurant)

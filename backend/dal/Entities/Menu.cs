@@ -9,4 +9,6 @@ public class Menu
 
     public Guid RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; }
+
+    public bool Archivied { get; set; } = false;
 }

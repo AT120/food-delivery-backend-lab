@@ -7,6 +7,8 @@ public class Dish
 {
     public Guid Id { get; set; }
     public string Name { get; set; } 
+    
+    [Range(0, int.MaxValue)]
     public int Price { get; set; }
     public string Description { get; set; }  // changable
     public bool IsVegetarian { get; set; }
@@ -18,8 +20,6 @@ public class Dish
     public Guid RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; }
 
-    //TODO: много
-    // public int MenuId { get; set; }
     public ICollection<Menu> Menus { get; set; }
     
     [Range(0, 10)]

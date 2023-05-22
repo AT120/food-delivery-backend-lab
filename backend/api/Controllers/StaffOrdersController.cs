@@ -14,12 +14,12 @@ namespace BackendApi.Controllers;
 
 [Route("/api/staff/orders")]
 [ApiController]
-public class StaffController : ControllerBase
+public class StaffOrdersController : ControllerBase
 {
 
-    private readonly IStaffService _staffService;
+    private readonly IStaffOrdersService _staffService;
 
-    public StaffController(IStaffService ss)
+    public StaffOrdersController(IStaffOrdersService ss)
     {
         _staffService = ss;
     }

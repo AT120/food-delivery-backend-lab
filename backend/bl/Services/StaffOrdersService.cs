@@ -1,12 +1,10 @@
 using System.Security.Claims;
-using BackendCommon.Const;
 using BackendCommon.DTO;
 using BackendCommon.Enums;
 using BackendCommon.Interfaces;
 using BackendDAL;
 using BackendDAL.Entities;
 using Microsoft.EntityFrameworkCore;
-using ProjCommon;
 using ProjCommon.Const;
 using ProjCommon.DTO;
 using ProjCommon.Enums;
@@ -16,11 +14,11 @@ using ProjCommon.Helpers;
 namespace BackendBl.Services;
 
 
-public class StaffService: IStaffService
+public class StaffOrdersService: IStaffOrdersService
 {
     private readonly BackendDBContext _dbcontext;
     private readonly INotifyService _notifyService;
-    public StaffService(BackendDBContext dc, INotifyService ns)
+    public StaffOrdersService(BackendDBContext dc, INotifyService ns)
     {
         _dbcontext = dc;
         _notifyService = ns;
@@ -83,7 +81,7 @@ public class StaffService: IStaffService
         if (order.CookId is not null && order.CookId != userId)
             throw UnauthorizedChangeStatus;  // другой повар уже работает над этим заказом
 
-        order.CookId ??= userId;  // TODO: Тут может быть дефолт, и ничего не сработает
+        order.CookId ??= userId;
         order.Status = GetNextOrderStatus(order.Status);
         await _notifyService.NotifyOrderStatusChanged(order.Id, order.CustomerId, order.Status);
 

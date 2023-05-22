@@ -5,7 +5,7 @@ using ProjCommon.DTO;
 
 namespace BackendCommon.Interfaces;
 
-public interface IStaffService
+public interface IStaffOrdersService
 {
     Task CancelOrder(int orderId, Guid userId);
 
