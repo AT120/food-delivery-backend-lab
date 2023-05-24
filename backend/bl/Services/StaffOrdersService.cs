@@ -151,13 +151,12 @@ public class StaffOrdersService: IStaffOrdersService
         if (!registered)
             throw Unregistered;
 
-        var query = _dbcontext.Orders.AsQueryable();
+        var query = _dbcontext.Orders.Where(o => o.RestaurantId != null);
         if (inDelivery)
         {
             query = query.Where(o =>
                 o.Status == OrderStatus.Delivery &&
                 o.CourierId == userId);
-
         }
         else
         {
@@ -177,7 +176,7 @@ public class StaffOrdersService: IStaffOrdersService
             {
                 Address = o.Address,
                 Id = o.Id,
-                RestaurantId = o.RestaurantId,
+                RestaurantId = o.RestaurantId.Value, // Проверенно на null выше
             })
             .Skip(pageInfo.RangeStart)
             .Take(PageSize.Default)
@@ -231,7 +230,7 @@ public class StaffOrdersService: IStaffOrdersService
                 Status = o.Status,
                 OrderTime = o.OrderTime,
                 DeliveryTime = o.DeliveryTime,
-                Dishes = o.Dishes.Select(d => Converter.GetShortDish(d.Dish)).ToList()
+                Dishes = o.Dishes.Select(d => Converter.GetShortDish(d.Dish, null)).ToList()
             })
             .Skip(pageInfo.RangeStart)
             .Take(PageSize.Default)
@@ -283,7 +282,7 @@ public class StaffOrdersService: IStaffOrdersService
                 Status = o.Status,
                 OrderTime = o.OrderTime,
                 DeliveryTime = o.DeliveryTime,
-                Dishes = o.Dishes.Select(d => Converter.GetShortDish(d.Dish)).ToList()
+                Dishes = o.Dishes.Select(d => Converter.GetShortDish(d.Dish, null)).ToList()
             })
             .Skip(pageInfo.RangeStart)
             .Take(PageSize.Default)

@@ -14,8 +14,8 @@ public class Order
 
     public OrderStatus Status { get; set; }
     
-    public Guid RestaurantId { get; set; }
-    public Restaurant Restaurant { get; set; }
+    public Guid? RestaurantId { get; set; }
+    public Restaurant? Restaurant { get; set; }
     
     public Guid? CookId { get; set; }
     public Cook?  Cook { get; set; }

@@ -17,8 +17,8 @@ public class Dish
     public string PhotoURL { get; set; }  // changable
     public DishCategory Category { get; set; }  // changable
 
-    public Guid RestaurantId { get; set; }
-    public Restaurant Restaurant { get; set; }
+    public Guid? RestaurantId { get; set; }
+    public Restaurant? Restaurant { get; set; }
 
     public ICollection<Menu> Menus { get; set; }
     

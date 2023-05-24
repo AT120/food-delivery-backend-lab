@@ -6,7 +6,7 @@ namespace BackendBl;
 
 public static class Converter
 {
-    public static DishShort GetShortDish(Dish d)
+    public static DishShort GetShortDish(Dish d, int? dishPrice = null)
     {
         return new DishShort
         {
@@ -14,7 +14,7 @@ public static class Converter
             IsVegetarian = d.IsVegetarian,
             Name = d.Name,
             PhotoUrl = d.PhotoURL,
-            Price = d.Price
+            Price = dishPrice ?? d.Price
         };
     }
 
@@ -51,8 +51,8 @@ public static class Converter
             FinalPrice = order.FinalPrice,
             RestaurantId = order.RestaurantId,
             Status = order.Status,
-
-            Dishes = order.Dishes.Select(d => GetShortDish(d.Dish)).ToList()
+ 
+            Dishes = order.Dishes.Select(d => GetShortDish(d.Dish, d.DishPrice)).ToList()
         };
     }
 

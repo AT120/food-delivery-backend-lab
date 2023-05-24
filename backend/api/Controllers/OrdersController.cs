@@ -86,6 +86,7 @@ public class OrdersController : ControllerBase
             return Problem("Unknown error", statusCode: 500);
         }
     }
+    //TODO: учесть null restaurant
 
     /// <summary>
     /// Создать заказ из корзины

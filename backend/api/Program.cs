@@ -47,6 +47,7 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IStaffOrdersService, StaffOrdersService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IStaffMenuService, StaffMenusService>();
+builder.Services.AddScoped<IStaffHelperService, StaffHelperService>();
 
 var app = builder.Build();
 

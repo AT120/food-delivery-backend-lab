@@ -207,8 +207,6 @@ public class StaffMenusController : Controller
         {
             return Problem("Unknown error", statusCode: 500);
         } 
-
-        return Problem("This method has not been yet implemented", statusCode: 501); 
     }
 
 

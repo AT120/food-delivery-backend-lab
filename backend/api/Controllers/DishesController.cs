@@ -41,7 +41,7 @@ public class DishesController : ControllerBase
     {
         try
         {
-            var res =  await _dishService.GetDishes(
+            var res =  await _dishService.GetDishesCustomer(
                 restaurantId,
                 page ?? 1,
                 vegetarianOnly ?? false,

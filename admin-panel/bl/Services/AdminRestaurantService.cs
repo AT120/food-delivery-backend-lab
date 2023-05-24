@@ -116,8 +116,6 @@ public class AdminRestaurantService : IAdminRestaurantService
         if ( !await AllOrdersAreCompleted(restaurantId) )
             throw new BackendException(400, "У ресторана остались невыполненные заказы, удаление невозможно");
         
-        
-
         // повара и менджеры каскадно удалятся
 
         var cooksIds = _backendDBContext.Cooks
@@ -132,6 +130,16 @@ public class AdminRestaurantService : IAdminRestaurantService
         
         foreach (var managerId in managersIds)
             await RemoveFromRole(managerId, RoleType.Manager);
+
+        // Архивируем блюда 
+        await _backendDBContext.Dishes
+            .Where(d => d.RestaurantId == restaurantId)
+            .ExecuteUpdateAsync(prop => prop.SetProperty(d => d.Archived, true));
+
+        // Архивируем меню
+        await _backendDBContext.Menus
+            .Where(d => d.RestaurantId == restaurantId)
+            .ExecuteUpdateAsync(prop => prop.SetProperty(d => d.Archived, true));
 
         _backendDBContext.Restaurants.Remove(rest);
 

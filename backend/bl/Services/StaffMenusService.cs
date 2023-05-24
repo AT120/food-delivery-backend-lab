@@ -2,6 +2,7 @@ using BackendCommon.DTO;
 using BackendCommon.Interfaces;
 using BackendDAL;
 using BackendDAL.Entities;
+using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.EntityFrameworkCore;
 using ProjCommon.Const;
 using ProjCommon.DTO;
@@ -12,23 +13,18 @@ namespace BackendBl.Services;
 public class StaffMenusService : IStaffMenuService
 {
     private readonly BackendDBContext _dbcontext;
-    public StaffMenusService(BackendDBContext dbc)
+    private readonly IStaffHelperService _staffHelper;
+    public StaffMenusService(BackendDBContext dbc, IStaffHelperService sh)
     {
         _dbcontext = dbc;
+        _staffHelper = sh;
     }
 
-
-    private async Task<Guid> GetManagerRestaurant(Guid userId)
-    {
-        var manager = await _dbcontext.Managers.FindAsync(userId)
-            ?? throw new BackendException(404, "User is not registered as a manager");
-        return manager.RestaurantId;
-    }
 
 
     private async Task<Menu> GetMenu(Guid userId, int menuId)
     {
-        Guid restaurantId = await GetManagerRestaurant(userId);
+        Guid restaurantId = await _staffHelper.GetManagerRestaurant(userId);
         return await GetMenuFromRestaurant(restaurantId, menuId);
     }
 
@@ -44,30 +40,16 @@ public class StaffMenusService : IStaffMenuService
     }
 
 
-    private async Task<bool> CheckMenuExistence(Guid restaurantId, int menuId)
-    {
-        return await _dbcontext.Menus
-            .AnyAsync(m => m.Id == menuId && m.RestaurantId == restaurantId);
-    }
-
-
-    private async Task<bool> CheckDishExistence(Guid restaurantId, Guid dishId)
-    {
-        return await _dbcontext.Dishes
-            .AnyAsync(m => m.Id == dishId && m.RestaurantId == restaurantId);
-    }
-
-
     public async Task<Page<MenuShort>> GetMenus(int page, bool? archived, Guid managerId)
     {
         if (page < 1)
             throw new BackendException(400, "Incorrect page number");
 
-        Guid restauranId = await GetManagerRestaurant(managerId);
+        Guid restauranId = await _staffHelper.GetManagerRestaurant(managerId);
         var query = _dbcontext.Menus
             .Where(m => m.RestaurantId == restauranId);
         if (archived != null)
-            query = query.Where(m => m.Archivied == archived);
+            query = query.Where(m => m.Archived == archived);
 
         int size = await query.CountAsync();
         PageInfo pageInfo = new(page, size, PageSize.Default);
@@ -94,9 +76,10 @@ public class StaffMenusService : IStaffMenuService
 
     public async Task<int> CreateMenu(string name, IEnumerable<Guid>? dishes, Guid managerId)
     {
-        var restaurantId = await GetManagerRestaurant(managerId);
+        var restaurantId = await _staffHelper.GetManagerRestaurant(managerId);
         var menu = new Menu
         {
+
             Name = name,
             RestaurantId = restaurantId,
         };
@@ -104,8 +87,9 @@ public class StaffMenusService : IStaffMenuService
         {
             foreach (var dishId in dishes)
             {
-                if (await CheckDishExistence(restaurantId, dishId))
-                    menu.Dishes.Add(new Dish { Id = dishId });
+                var dish = await _dbcontext.Dishes.FindAsync(dishId);
+                if (dish != null && dish.RestaurantId == restaurantId)
+                    menu.Dishes.Add(dish);     
             }
         }
         await _dbcontext.Menus.AddAsync(menu);
@@ -118,7 +102,7 @@ public class StaffMenusService : IStaffMenuService
     {
         var menu = await GetMenu(managerId, menuId);
         if (archived != null)
-            menu.Archivied = archived.Value;
+            menu.Archived = archived.Value;
 
         if (name != null)
             menu.Name = name;
@@ -137,7 +121,7 @@ public class StaffMenusService : IStaffMenuService
 
     public async Task<MenuDetailed> GetMenuDetailed(int menuId, Guid managerId)
     {
-        Guid restaurantId = await GetManagerRestaurant(managerId);
+        Guid restaurantId = await _staffHelper.GetManagerRestaurant(managerId);
         var menu = await _dbcontext.Menus
             .Include(m => m.Dishes)
             .FirstOrDefaultAsync(m => m.Id == menuId);
@@ -158,22 +142,23 @@ public class StaffMenusService : IStaffMenuService
         {
             Dishes = dishes,
             Id = menu.Id,
-            Name = menu.Name
+            Name = menu.Name,
+            Archived = menu.Archived
         };
     }
 
 
     public async Task AddDishToMenu(int menuId, Guid dishId, Guid managerId)
     {
-        Guid restaurantId = await GetManagerRestaurant(managerId);
+        Guid restaurantId = await _staffHelper.GetManagerRestaurant(managerId);
         var menu = await GetMenuFromRestaurant(restaurantId, menuId);
         // if (!await CheckMenuExistence(restaurantId, menuId))
         // throw new BackendException(404, "Menu not found");
-
-        if (!await CheckDishExistence(restaurantId, dishId))
+        var dish = await _dbcontext.Dishes.FindAsync(dishId);
+        if (dish == null || dish.RestaurantId != restaurantId)
             throw new BackendException(404, "Dish not found");
 
-        menu.Dishes.Add(new Dish { Id = dishId });
+        menu.Dishes.Add(dish);
 
         await _dbcontext.SaveChangesAsync();
     }
@@ -181,9 +166,13 @@ public class StaffMenusService : IStaffMenuService
 
     public async Task DeleteDishFromMenu(int menuId, Guid dishId, Guid managerId)
     {
-        // var restauranId = await GetManagerRestaurant(managerId);
-        var menu = await GetMenu(managerId, menuId);
-        menu.Dishes.Remove(new Dish { Id = dishId }); //TODO: Это может не работать
-        await _dbcontext.SaveChangesAsync();
+        var restauranId = await _staffHelper.GetManagerRestaurant(managerId);
+        bool menuExists = await _staffHelper.CheckMenuExistence(restauranId, menuId);
+        if (!menuExists)
+            throw new BackendException(404, "Menu not found");
+
+        await _dbcontext.DishesInMenu
+            .Where(d => d.DishId == dishId && d.MenuId == menuId)
+            .ExecuteDeleteAsync();
     }
 }

@@ -117,7 +117,8 @@ public class OrderService : IOrderService
         string address,
         DateTime deliveryTime
     )
-    {
+    { 
+        //TODO: mutex
         if (deliveryTime - DateTime.UtcNow < Delivery.MinDeliveryTimeDiff)
             throw new BackendException(400, "We can't delivery order faster the 2 hours");
 
@@ -161,7 +162,7 @@ public class OrderService : IOrderService
             {
                 Count = dish.Count,
                 DishId = dish.DishId,
-                // OrderId = order.Id,
+                DishPrice = dish.Dish.Price,
                 Order = order,
             });
         }
@@ -189,7 +190,7 @@ public class OrderService : IOrderService
 
         foreach (var dish in prevOrder.Dishes)
         {
-            if (dish.Dish.Archived)
+            if (dish.Dish.Archived || dish.Dish.RestaurantId == null)
                 continue;
 
             var sameDishInCart = cart.FirstOrDefault(d => d.DishId == dish.DishId);

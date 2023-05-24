@@ -1,6 +1,7 @@
 using System.Reflection.Metadata;
 using BackendDAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace BackendDAL;
 
@@ -13,7 +14,7 @@ public class BackendDBContext : DbContext
     public DbSet<DishInCart> DishesInCart { get; set; }
     public DbSet<Manager> Managers { get; set; }
     public DbSet<Menu> Menus { get; set; }
-    // public DbSet<DishMenu> DishesInMenu { get; set; }
+    public DbSet<DishMenu> DishesInMenu { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderedDish> OrderedDishes { get; set; }
     public DbSet<RatedDish> RatedDishes { get; set; }
@@ -38,10 +39,10 @@ public class BackendDBContext : DbContext
 
         builder.Entity<Restaurant>().HasIndex(r => r.Name).IsUnique();
         
-        // builder.Entity<Menu>()
-        //     .HasMany(m => m.Dishes)
-        //     .WithMany(d => d.Menus)
-        //     .UsingEntity<DishMenu>();
+        builder.Entity<Menu>()
+            .HasMany(m => m.Dishes)
+            .WithMany(d => d.Menus)
+            .UsingEntity<DishMenu>();
 
         builder.Entity<Restaurant>()
             .HasMany(r => r.Cooks)
@@ -66,5 +67,25 @@ public class BackendDBContext : DbContext
             .WithOne(o => o.Courier)
             .HasForeignKey(o => o.CourierId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.Entity<Restaurant>()
+            .HasMany<Order>()
+            .WithOne(o => o.Restaurant)
+            .HasForeignKey(o => o.RestaurantId)
+            .OnDelete(DeleteBehavior.SetNull);
+        
+        builder.Entity<Restaurant>()
+            .HasMany(r => r.Dishes)
+            .WithOne(d => d.Restaurant)
+            .HasForeignKey(d => d.RestaurantId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.Entity<Restaurant>()
+            .HasMany(r => r.Menus)
+            .WithOne(m => m.Restaurant)
+            .HasForeignKey(m => m.RestaurantId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+
     }
 }

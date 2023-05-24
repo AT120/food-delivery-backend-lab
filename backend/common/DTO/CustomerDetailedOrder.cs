@@ -11,6 +11,6 @@ public class CustomerDetailedOrder
     public int FinalPrice { get; set; }
     public string Address { get; set; }
     public OrderStatus Status { get; set; }
-    public Guid RestaurantId { get; set; }
+    public Guid? RestaurantId { get; set; }
     public ICollection<DishShort> Dishes { get; set; }
 }

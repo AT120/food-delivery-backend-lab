@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace BackendDAL.Entities;
 
 public class OrderedDish
@@ -8,5 +10,9 @@ public class OrderedDish
     public Guid DishId { get; set; }
     public Dish Dish { get; set; }
     
+    [Range(0, int.MaxValue)]
     public int Count { get; set; }
+
+    [Range(0, int.MaxValue)]
+    public int DishPrice { get; set; }
 }

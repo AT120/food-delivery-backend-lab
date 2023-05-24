@@ -3,6 +3,7 @@ using System;
 using BackendDAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendDAL.Migrations
 {
     [DbContext(typeof(BackendDBContext))]
-    partial class BackendDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230524102121_DishPrice")]
+    partial class DishPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,7 +88,7 @@ namespace BackendDAL.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("double precision");
 
-                    b.Property<Guid?>("RestaurantId")
+                    b.Property<Guid>("RestaurantId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -111,21 +114,6 @@ namespace BackendDAL.Migrations
                     b.HasIndex("DishId");
 
                     b.ToTable("DishesInCart");
-                });
-
-            modelBuilder.Entity("BackendDAL.Entities.DishMenu", b =>
-                {
-                    b.Property<Guid>("DishId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("MenuId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("DishId", "MenuId");
-
-                    b.HasIndex("MenuId");
-
-                    b.ToTable("DishesInMenu");
                 });
 
             modelBuilder.Entity("BackendDAL.Entities.Manager", b =>
@@ -159,7 +147,7 @@ namespace BackendDAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("RestaurantId")
+                    b.Property<Guid>("RestaurantId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -199,7 +187,7 @@ namespace BackendDAL.Migrations
                     b.Property<DateTime>("OrderTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("RestaurantId")
+                    b.Property<Guid>("RestaurantId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Status")
@@ -273,6 +261,21 @@ namespace BackendDAL.Migrations
                     b.ToTable("Restaurants");
                 });
 
+            modelBuilder.Entity("DishMenu", b =>
+                {
+                    b.Property<Guid>("DishesId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("MenusId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("DishesId", "MenusId");
+
+                    b.HasIndex("MenusId");
+
+                    b.ToTable("DishMenu");
+                });
+
             modelBuilder.Entity("BackendDAL.Entities.Cook", b =>
                 {
                     b.HasOne("BackendDAL.Entities.Restaurant", "Restaurant")
@@ -289,7 +292,8 @@ namespace BackendDAL.Migrations
                     b.HasOne("BackendDAL.Entities.Restaurant", "Restaurant")
                         .WithMany("Dishes")
                         .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Restaurant");
                 });
@@ -303,21 +307,6 @@ namespace BackendDAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Dish");
-                });
-
-            modelBuilder.Entity("BackendDAL.Entities.DishMenu", b =>
-                {
-                    b.HasOne("BackendDAL.Entities.Dish", null)
-                        .WithMany()
-                        .HasForeignKey("DishId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BackendDAL.Entities.Menu", null)
-                        .WithMany()
-                        .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("BackendDAL.Entities.Manager", b =>
@@ -336,7 +325,8 @@ namespace BackendDAL.Migrations
                     b.HasOne("BackendDAL.Entities.Restaurant", "Restaurant")
                         .WithMany("Menus")
                         .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Restaurant");
                 });
@@ -356,7 +346,8 @@ namespace BackendDAL.Migrations
                     b.HasOne("BackendDAL.Entities.Restaurant", "Restaurant")
                         .WithMany()
                         .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Cook");
 
@@ -393,6 +384,21 @@ namespace BackendDAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Dish");
+                });
+
+            modelBuilder.Entity("DishMenu", b =>
+                {
+                    b.HasOne("BackendDAL.Entities.Dish", null)
+                        .WithMany()
+                        .HasForeignKey("DishesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackendDAL.Entities.Menu", null)
+                        .WithMany()
+                        .HasForeignKey("MenusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BackendDAL.Entities.Cook", b =>
