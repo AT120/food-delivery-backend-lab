@@ -1,3 +1,7 @@
+## Реализовано
+Сделаны все компоненты в базовом варианте. 
+
+## Запуск
 Для запуска нужно прописать connection strings во всех appsetings:
 - notifications/appsettings.json
 - backend/api/appsettings.json
