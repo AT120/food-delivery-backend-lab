@@ -1,11 +1,13 @@
 @model Page<GenericItem>
 @{
+    ViewData["Title"] = "Restaurants";
+
     int CurrentPage = Context.GetCurrentPage() ?? 1;
     string SearchQuery = Context.GetSearchQuery();
     string prevPageModifier = (CurrentPage == 1) ? "disabled" : "";
     string nextPageModifier = (Model.PageInfo.Size == Model.PageInfo.RangeEnd) ? "disabled" : "";
     ViewData["DeleteController"] = "Restaurant";
-    
+
 }
 
 <div class="d-flex flex-column">

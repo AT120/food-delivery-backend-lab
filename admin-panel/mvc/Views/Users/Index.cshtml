@@ -1,5 +1,7 @@
 @model Page<UserProfile>
 @{
+    ViewData["Title"] = "Users";
+
     int CurrentPage = Context.GetCurrentPage() ?? 1;
     var query = Context.Request.Query;
     string emailSearchQuery = query.TryParseSingle<string>("emailSearchQuery");
