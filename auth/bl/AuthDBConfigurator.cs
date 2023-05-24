@@ -23,14 +23,14 @@ public static class AuthConfigurator
         {
             builder.Services.AddIdentity<User, Role>()
                 .AddSignInManager<SignInManager<User>>()
-                .AddEntityFrameworkStores<AuthDBContext>();     
+                .AddEntityFrameworkStores<AuthDBContext>();
         }
         else
         {
             builder.Services.AddIdentityCore<User>()
                 .AddRoles<Role>()
                 .AddRoleManager<RoleManager<Role>>()
-                .AddEntityFrameworkStores<AuthDBContext>();           
+                .AddEntityFrameworkStores<AuthDBContext>();
         }
 
         builder.Services.Configure<IdentityOptions>(options =>
@@ -50,13 +50,13 @@ public static class AuthConfigurator
 
     public static async Task SeedRoles(this WebApplication app)
     {
-       using (var scope = app.Services.CreateScope())
+        using (var scope = app.Services.CreateScope())
         {
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
             var existingRoles = await roleManager.Roles
                 .Select(s => s.RoleType)
                 .ToListAsync();
-            
+
             var definedRoles = Enum.GetValues<RoleType>();
             // var rolesToDelete = existingRoles.Except(definedRoles);
             var rolesToCreate = definedRoles.Except(existingRoles);
@@ -71,59 +71,24 @@ public static class AuthConfigurator
             }
         }
     }
-    // public async static Task UpdateRolesAndClaims(this WebApplication app)
-    // {
-    //     using (var scope = app.Services.CreateScope())
-    //     {
-    //         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-    //         var existingRoles = roleManager.Roles.ToList();
-    //         foreach (var rolesClaims in RolesAndClaims.Map)
-    //         {
-    //             // Create missing roles
-    //             var roleType = rolesClaims.Key;
-    //             var claims = rolesClaims.Value;
-    //             Role? role = existingRoles.Find(x => x.RoleType == roleType);
-    //             if (role is null)
-    //             {
-    //                 role = new Role
-    //                 {
-    //                     RoleType = roleType,
-    //                     Name = Enum.GetName<RoleType>(roleType)
-    //                 };
-    //                 var res = await roleManager.CreateAsync(role);
-    //                 if (!res.Succeeded)
-    //                     throw new InvalidOperationException("Can't create role");
-    //             }
 
-    //             // Create missing claims for each role 
-    //             var existingClaims = await roleManager.GetClaimsAsync(role);
-    //             foreach (var claimType in claims)
-    //             {
-    //                 var claim = existingClaims.FirstOrDefault(x => x.Type == claimType.ToString());
-    //                 if (claim is null)
-    //                 {
-    //                     claim = new Claim(claimType.ToString(), "");
-    //                     var res = await roleManager.AddClaimAsync(role, claim);
-    //                     if (!res.Succeeded)
-    //                         throw new InvalidOperationException("Can't create role");
-    //                 }
-    //                 else
-    //                 {
-    //                     existingClaims.Remove(claim);
-    //                 }
-    //             }
+    public static async Task InitAdmin(this WebApplication app)
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        
+            if (! userManager.Users.Any(u => u.Email == "root@root"))
+            {
+                var admin = new User {
+                    Email = "admin@admin",
+                    UserName = "admin@admin",
+                    FullName = "Admin"
+                };
 
-    //             // Remove redundant claims
-    //             foreach (var redClaim in existingClaims)
-    //             {
-    //                 var res = await roleManager.RemoveClaimAsync(role, redClaim);
-    //                 if (!res.Succeeded)
-    //                     throw new InvalidOperationException("Can't create role");
-    //             }
-
-    //         }
-        // }
-    // }
-
-
+                await userManager.CreateAsync(admin, "admin");
+                await userManager.AddToRoleAsync(admin, RoleType.Admin.ToString());
+            }
+        }
+    }
 }

@@ -66,8 +66,7 @@ if (app.Environment.IsDevelopment())
     app.MigrateAuthDB();
 }
 await app.SeedRoles();
-// await app.UpdateRolesAndClaims();
-// app.UseHttpLogging();
+await app.InitAdmin();
 
 app.UseHttpsRedirection();
 
