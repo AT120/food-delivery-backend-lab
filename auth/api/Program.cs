@@ -70,7 +70,6 @@ await app.SeedRoles();
 // app.UseHttpLogging();
 
 app.UseHttpsRedirection();
-app.UseMiddleware<DebugMiddleware>();
 
 app.UseAuthentication();
 
