@@ -298,7 +298,7 @@ public class StaffOrdersService: IStaffOrdersService
     public async Task<Page<StaffOrder>> GetOrders(
         int page,
         int orderStatuses,
-        int? orderId, //TODO: Сделать поиск по id
+        int? orderId,
         StaffOrderSortingTypes sorting,
         ClaimsPrincipal user)
     {

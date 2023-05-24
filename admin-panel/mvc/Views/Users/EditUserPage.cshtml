@@ -10,20 +10,7 @@
         userRoles[(int)role] = true;
 
 
-    @* var restaurantsSelectList =
-    InputModel.AvailableRestaurants.Select(r => new SelectListItem(
-        r.Name,
-        r.Id.ToString(),
-        r.UserWorkingHere
-    )); *@
-
     Guid userId = Context.Request.Query.TryParseSingle<Guid>("userId", Guid.Parse);
-    @* Model = new UserProfileEditDTO
-{
-UserId = userId,
-Roles = userRoles
-}; *@
-    @* Model.Roles = userRoles; *@
 }
 
 
@@ -50,8 +37,6 @@ Roles = userRoles
     <div class="mb-3 row">
         <label for="birthdateInput" class="col-lg col-form-label">День рождения</label>
         <div class="col-lg-10">
-            @* <input min="1900-01-01" max="9999-12-31" type="date" id="birthdateInput" value="@InputModel.BirthDate" *@
-                @* class="form-control-plaintext" readonly> *@
             <span>
                 @if (InputModel.BirthDate.HasValue)
                 {
@@ -66,16 +51,6 @@ Roles = userRoles
             <div class="form-control-plaintext">@InputModel.Gender</div>
         </div>
     </div>
-    @* <div class="mb-3 row">
-        <label for="restaurantInput" class="col-lg col-form-label">Ресторан</label>
-        <div class="col-lg-10 ">
-            <input class="form-control" list="restaurantOptions" id="restaurantInput">
-            <select id="restaurantInput" asp-items="@restaurantsSelectList" asp-for="NewRestaurantId">
-                <option selected value="">Не работает в ресторане</option>
-
-            </select>
-        </div>
-    </div> *@
 
     <div class="mb-3 row">
         <label for="restaurantInput" class="col-lg col-form-label">Ресторан</label>

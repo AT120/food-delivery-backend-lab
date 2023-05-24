@@ -1,5 +1,6 @@
 @model UserProfileCreateDTO
 @{
+    ViewData["DeleteController"] = "New User";
     var restaurants = ViewData["Restaurants"] as IEnumerable<AvailableRestaurant>
         ?? throw new ArgumentException("You have to pass Restaurants in this view");
           

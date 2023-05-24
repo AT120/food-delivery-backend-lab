@@ -168,7 +168,7 @@ public class DishService : IDishService
         int newRating,
         Guid userId)
     {
-        //TODO: mutex
+        //TODO: race condition
         var dish = await _dbcontext.Dishes.FindAsync(dishId)
             ?? throw new BackendException(404, "Requested dish does not exist.");
 

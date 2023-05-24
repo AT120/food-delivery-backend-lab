@@ -129,7 +129,7 @@ public class StaffMenusService : IStaffMenuService
         if (menu == null || menu.RestaurantId != restaurantId)
             throw new BackendException(404, "Menu not found");
 
-        var dishes = menu.Dishes.Select(d => new DishShort //TODO: а сработает ли? Лучше переделать на явный include
+        var dishes = menu.Dishes.Select(d => new DishShort
         {
             Id = d.Id,
             IsVegetarian = d.IsVegetarian,

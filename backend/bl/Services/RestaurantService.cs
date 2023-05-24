@@ -61,7 +61,7 @@ public class RestaurantService : IRestaurantService
             throw new BackendException(404, "Requested restaurant does not exist.");
 
         return await _dbcontext.Menus
-            .Where(m => m.RestaurantId == restaurantId) //TODO: и не скрыто
+            .Where(m => m.RestaurantId == restaurantId && !m.Archived)
             .Select(m => new MenuDTO 
             {
                 Id = m.Id,

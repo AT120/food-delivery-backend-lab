@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using NotificationApi;
 using NotificationApi.Hubs;
 using ProjCommon.Configurators;
+using ProjCommon.Exceptions;
 using ProjCommon.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,20 +25,22 @@ builder.ConfigureNotificationQueue();
 builder.Services.AddHostedService<BackgroundNotifier>();
 
 builder.ConfigureToken();
-builder.Services.AddJwtAuthentication(new JwtBearerEvents {
+builder.Services.AddJwtAuthentication(new JwtBearerEvents
+{
     OnMessageReceived = TokenHelper.TokenFromQuery
 });
 
 builder.Services.AddCors(options =>
 {
-   options.AddDefaultPolicy(builder =>
-   {
-        builder.AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()
-            .WithOrigins("http://localhost:8021"); //TODO: вынести в appsetings
-            // .AllowAnyOrigin();
-   });
+    options.AddDefaultPolicy(policy => {
+        policy.AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
+        .WithOrigins(
+            builder.Configuration["ClientOrigin"] 
+                ?? throw new InvalidConfigException("Specify client origin in appsetings!")
+            );
+    });
 });
 
 var app = builder.Build();

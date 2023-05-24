@@ -118,7 +118,7 @@ public class OrderService : IOrderService
         DateTime deliveryTime
     )
     { 
-        //TODO: mutex
+        //TODO: race condition
         if (deliveryTime - DateTime.UtcNow < Delivery.MinDeliveryTimeDiff)
             throw new BackendException(400, "We can't delivery order faster the 2 hours");
 

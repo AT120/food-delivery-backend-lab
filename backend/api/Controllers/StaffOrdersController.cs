@@ -69,7 +69,7 @@ public class StaffOrdersController : ControllerBase
     /// </summary>
     /// <param name="inDelivery">Если true, то в результате будут заказы, которые уже взяты запрашиваемым курьером</param>
     [HttpGet("in-delivery")]
-    [Authorize(Roles = "Courier")] //TODO: константой откуда-нибудь
+    [Authorize(Roles = "Courier")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status206PartialContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

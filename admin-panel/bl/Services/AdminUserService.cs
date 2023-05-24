@@ -190,7 +190,7 @@ public class AdminUserService : IAdminUserService
             query = query.Where(u => u.FullName.Contains(nameSearchQuery));
 
         if (phoneSearchQuery != null)
-            query = query.Where(u => u.PhoneNumber.Contains(phoneSearchQuery)); //TODO: телефон мож быть null
+            query = query.Where(u => u.PhoneNumber.Contains(phoneSearchQuery));
 
         if (gender != null)
             query = query.Where(u => u.Gender == gender);
@@ -208,10 +208,10 @@ public class AdminUserService : IAdminUserService
         PageInfo pageInfo = new(page, size, PageSize.AdminPanel);
 
         if (pageInfo.RangeStart > size)
-            throw new BackendException("переработать");  //TODO:
+            throw new BackendException(400, "Неверный номер страницы");  //TODO:
 
         var users = await query
-            .OrderBy(u => u.FullName) //TODO: добавить сортировку
+            .OrderBy(u => u.FullName)
             .Select(u => Converter.GetUserProfile(u))
             .Skip(pageInfo.RangeStart)
             .Take(PageSize.AdminPanel)
